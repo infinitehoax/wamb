@@ -99,21 +99,21 @@ You are restricted to these exact, modern frameworks. **Do not use deprecated li
 ## 📅 6. THE 150-DAY MICRO-TASK EXECUTION BACKLOG
 
 ### PHASE 1: CI/CD & App Skeleton (Days 1 - 15)
-- [ ] **Day 1:** Initialize Android project. Setup `build.gradle.kts` (app & project level). Add Jetpack Compose, Room, Hilt, Retrofit, Navigation dependencies.
-- [ ] **Day 2:** Configure `.github/workflows/build.yml` for automated APK generation on push (Ubuntu-latest, JDK 17, `assembleDebug`, upload artifact).
-- [ ] **Day 3:** Setup MVVM directory structure: `com.eduprep.app/data`, `/domain`, `/presentation`, `/di`, `/ui/theme`.
-- [ ] **Day 4:** Implement `Color.kt` and `Theme.kt`. Define primary brand color, dark/light variations, off-white backgrounds, and dark-grey text colors.
-- [ ] **Day 5:** Implement `Type.kt`. Enforce Min 16sp body text, 24sp line height, and bold Headings.
-- [ ] **Day 6:** Setup Hilt Application class and `AppModule` for dependency injection.
-- [ ] **Day 7:** Implement the Main `NavHost` and `Scaffold`.
-- [ ] **Day 8:** Build the Material 3 `NavigationBar` (Bottom Bar) with items: Practice, Classroom, Theory AI, Profile. Enforce 48dp touch targets.
-- [ ] **Day 9:** Create placeholder screens for the 4 bottom bar routes to verify navigation works.
-- [ ] **Day 10:** Implement custom Shared Element slide-in/slide-out transitions for Jetpack Navigation Compose.
-- [ ] **Day 11:** Implement a globally reusable `ProEmptyState` composable function (Icon, Title, Body, CTA).
-- [ ] **Day 12:** Implement a globally reusable `TopAppBar` with a dynamic title and optional back arrow.
-- [ ] **Day 13:** Setup `local.properties` and `build.gradle` to securely inject `GEMINI_API_KEY` into `BuildConfig`.
-- [ ] **Day 14:** Write an Internet Connection Utility class (Flow/LiveData emitting network state).
-- [ ] **Day 15:** Code cleanup, resolve IDE warnings, push, and verify successful GitHub Action APK build.
+- [x] **Day 1:** Initialize Android project. Setup `build.gradle.kts` (app & project level). Add Jetpack Compose, Room, Hilt, Retrofit, Navigation dependencies.
+- [x] **Day 2:** Configure `.github/workflows/build.yml` for automated APK generation on push (Ubuntu-latest, JDK 17, `assembleDebug`, upload artifact).
+- [x] **Day 3:** Setup MVVM directory structure: `com.eduprep.app/data`, `/domain`, `/presentation`, `/di`, `/ui/theme`.
+- [x] **Day 4:** Implement `Color.kt` and `Theme.kt`. Define primary brand color, dark/light variations, off-white backgrounds, and dark-grey text colors.
+- [x] **Day 5:** Implement `Type.kt`. Enforce Min 16sp body text, 24sp line height, and bold Headings.
+- [x] **Day 6:** Setup Hilt Application class and `AppModule` for dependency injection.
+- [x] **Day 7:** Implement the Main `NavHost` and `Scaffold`.
+- [x] **Day 8:** Build the Material 3 `NavigationBar` (Bottom Bar) with items: Practice, Classroom, Theory AI, Profile. Enforce 48dp touch targets.
+- [x] **Day 9:** Create placeholder screens for the 4 bottom bar routes to verify navigation works.
+- [x] **Day 10:** Implement custom Shared Element slide-in/slide-out transitions for Jetpack Navigation Compose.
+- [x] **Day 11:** Implement a globally reusable `ProEmptyState` composable function (Icon, Title, Body, CTA).
+- [x] **Day 12:** Implement a globally reusable `TopAppBar` with a dynamic title and optional back arrow.
+- [x] **Day 13:** Setup `local.properties` and `build.gradle` to securely inject `GEMINI_API_KEY` into `BuildConfig`.
+- [x] **Day 14:** Write an Internet Connection Utility class (Flow/LiveData emitting network state).
+- [x] **Day 15:** Code cleanup, resolve IDE warnings, push, and verify successful GitHub Action APK build.
 
 ### PHASE 2: Offline Database & CBT Engine (Days 16 - 45)
 - [ ] **Day 16:** Create Room Entity: `QuestionEntity` (id, subject, topic, year, text, optA, optB, optC, optD, answer, explanation, is_theory, exact_math_answer).

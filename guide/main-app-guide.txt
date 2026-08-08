@@ -1,6 +1,4 @@
-Here is a comprehensive Developer Product Requirements Document (PRD) for the fully offline WAEC/JAMB Practice & Learning App, incorporating modern Android UI/UX best practices.
 
----
 
 # 📄 Product Requirements Document (PRD)
 **Product Name:** EduPrep Offline (WAEC & JAMB)
@@ -97,8 +95,8 @@ Based on modern Android design guidelines and Apple's Human Interface Guidelines
 
 ### 5.2. Offline AI Implementation Strategy
 Running AI offline on standard mobile devices requires optimization to avoid app bloat:
-* **Theory Grading:** Implement an ONNX Runtime or TensorFlow Lite local NLP model. Use a lightweight text-embedding model (like MobileBERT) to compare the user's answer vector against the marking guide vector.
-* **AI Tutor:** Pre-package a highly quantized, small-parameter LLM (e.g., Gemma 2B or Llama-3 8B quantized via MLC LLM) that runs directly on device hardware. If device constraints are too tight, use a robust, pre-indexed offline search engine combined with decision-tree logic to simulate conversational tutoring.
+* **Theory Grading:** Implement an API to grade it (the only online feature along AI Tutor), though it would still auto-grade number answers like theory of finding x variable
+* **AI Tutor:** Use API
 
 ### 5.3. App Size & Asset Management
 * Because the app is offline, initial APK/AAB size will be large.

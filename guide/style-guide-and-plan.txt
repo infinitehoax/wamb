@@ -116,36 +116,36 @@ You are restricted to these exact, modern frameworks. **Do not use deprecated li
 - [x] **Day 15:** Code cleanup, resolve IDE warnings, push, and verify successful GitHub Action APK build.
 
 ### PHASE 2: Offline Database & CBT Engine (Days 16 - 45)
-- [ ] **Day 16:** Create Room Entity: `QuestionEntity` (id, subject, topic, year, text, optA, optB, optC, optD, answer, explanation, is_theory, exact_math_answer).
-- [ ] **Day 17:** Create Room DAO: `QuestionDao`. Add queries for filtering by subject, year, topic, and randomizing limits.
-- [ ] **Day 18:** Create Room Database setup `AppDatabase.kt` and provide it via Hilt.
-- [ ] **Day 19:** Create Domain Models and Mapper classes to map `QuestionEntity` to `Question`.
-- [ ] **Day 20:** Implement `QuizRepository` interface and implementation.
-- [ ] **Day 21:** Build CBT Setup UI (Part 1). Create the main "Practice" dashboard. Enforce 8dp grid spacing.
-- [ ] **Day 22:** Build CBT Setup UI (Part 2). Implement a `ModalBottomSheet` for selecting the "Subject".
-- [ ] **Day 23:** Build CBT Setup UI (Part 3). Implement `ModalBottomSheet` for selecting "Year" and "Topic".
-- [ ] **Day 24:** Build CBT Setup UI (Part 4). Implement "Mode" selection (Study, Practice, Mock) using stylized selectable Cards (no double nesting).
-- [ ] **Day 25:** Implement `QuizSetupViewModel` to hold selected filters and pass arguments to the Quiz Screen.
-- [ ] **Day 26:** Build Active Quiz UI (Part 1). Top bar with current question number (e.g., "4/50") and a Countdown Timer.
-- [ ] **Day 27:** Build Active Quiz UI (Part 2). Question text display (left-aligned, 24sp line height).
-- [ ] **Day 28:** Build Active Quiz UI (Part 3). Radio Buttons. **UI DICTATE:** Wrap the radio button and text in a `Row` with `Modifier.fillMaxWidth().clickable()`. Min height 48.dp.
-- [ ] **Day 29:** Build Active Quiz UI (Part 4). "Previous" and "Next" buttons at the bottom.
-- [ ] **Day 30:** Implement `QuizViewModel` state management (current question index, selected options map).
-- [ ] **Day 31:** Implement `QuizViewModel` Timer logic using Kotlin Coroutines `delay()`.
-- [ ] **Day 32:** Implement Study Mode Logic (Show correct answer and explanation immediately upon selection).
-- [ ] **Day 33:** Implement Mock/Practice Mode Logic (Allow changing answers, submit only at the end).
-- [ ] **Day 34:** Build Test Submission logic (Calculate score, pass data to Results screen).
-- [ ] **Day 35:** Build Results UI (Part 1). Score overview (large typography) and Time Taken.
-- [ ] **Day 36:** Build Results UI (Part 2). Add a Circular Progress Bar matching the percentage score.
-- [ ] **Day 37:** Build Results UI (Part 3). Create a `LazyColumn` showing every question, what the user picked, the correct answer, and the explanation.
-- [ ] **Day 38:** Build Results UI (Part 4). Add color-coded indicators (Green for Correct, Red for Wrong) to the Results list.
-- [ ] **Day 39:** Implement a "Retake Test" button on the Results Screen.
-- [ ] **Day 40:** Implement Bookmarking. Add a "Star" icon on the Active Quiz UI.
-- [ ] **Day 41:** Create Room Entity and DAO for Bookmarks.
-- [ ] **Day 42:** Build "My Bookmarks" UI screen. Implement `ProEmptyState` if empty.
-- [ ] **Day 43:** Link the Star icon to the Bookmarks DB in the ViewModel.
-- [ ] **Day 44:** Write unit tests for the CBT scoring logic.
-- [ ] **Day 45:** Run full manual simulation via code review. Push and verify GitHub Action build.
+- [x] **Day 16:** Create Room Entity: `QuestionEntity` (id, subject, topic, year, text, optA, optB, optC, optD, answer, explanation, is_theory, exact_math_answer).
+- [x] **Day 17:** Create Room DAO: `QuestionDao`. Add queries for filtering by subject, year, topic, and randomizing limits.
+- [x] **Day 18:** Create Room Database setup `AppDatabase.kt` and provide it via Hilt.
+- [x] **Day 19:** Create Domain Models and Mapper classes to map `QuestionEntity` to `Question`.
+- [x] **Day 20:** Implement `QuizRepository` interface and implementation.
+- [x] **Day 21:** Build CBT Setup UI (Part 1). Create the main "Practice" dashboard. Enforce 8dp grid spacing.
+- [x] **Day 22:** Build CBT Setup UI (Part 2). Implement a `ModalBottomSheet` for selecting the "Subject".
+- [x] **Day 23:** Build CBT Setup UI (Part 3). Implement `ModalBottomSheet` for selecting "Year" and "Topic".
+- [x] **Day 24:** Build CBT Setup UI (Part 4). Implement "Mode" selection (Study, Practice, Mock) using stylized selectable Cards (no double nesting).
+- [x] **Day 25:** Implement `QuizSetupViewModel` to hold selected filters and pass arguments to the Quiz Screen.
+- [x] **Day 26:** Build Active Quiz UI (Part 1). Top bar with current question number (e.g., "4/50") and a Countdown Timer.
+- [x] **Day 27:** Build Active Quiz UI (Part 2). Question text display (left-aligned, 24sp line height).
+- [x] **Day 28:** Build Active Quiz UI (Part 3). Radio Buttons. **UI DICTATE:** Wrap the radio button and text in a `Row` with `Modifier.fillMaxWidth().clickable()`. Min height 48.dp.
+- [x] **Day 29:** Build Active Quiz UI (Part 4). "Previous" and "Next" buttons at the bottom.
+- [x] **Day 30:** Implement `QuizViewModel` state management (current question index, selected options map).
+- [x] **Day 31:** Implement `QuizViewModel` Timer logic using Kotlin Coroutines `delay()`.
+- [x] **Day 32:** Implement Study Mode Logic (Show correct answer and explanation immediately upon selection).
+- [x] **Day 33:** Implement Mock/Practice Mode Logic (Allow changing answers, submit only at the end).
+- [x] **Day 34:** Build Test Submission logic (Calculate score, pass data to Results screen).
+- [x] **Day 35:** Build Results UI (Part 1). Score overview (large typography) and Time Taken.
+- [x] **Day 36:** Build Results UI (Part 2). Add a Circular Progress Bar matching the percentage score.
+- [x] **Day 37:** Build Results UI (Part 3). Create a `LazyColumn` showing every question, what the user picked, the correct answer, and the explanation.
+- [x] **Day 38:** Build Results UI (Part 4). Add color-coded indicators (Green for Correct, Red for Wrong) to the Results list.
+- [x] **Day 39:** Implement a "Retake Test" button on the Results Screen.
+- [x] **Day 40:** Implement Bookmarking. Add a "Star" icon on the Active Quiz UI.
+- [x] **Day 41:** Create Room Entity and DAO for Bookmarks.
+- [x] **Day 42:** Build "My Bookmarks" UI screen. Implement `ProEmptyState` if empty.
+- [x] **Day 43:** Link the Star icon to the Bookmarks DB in the ViewModel.
+- [x] **Day 44:** Write unit tests for the CBT scoring logic.
+- [x] **Day 45:** Run full manual simulation via code review. Push and verify GitHub Action build.
 
 ### PHASE 3: Hybrid Theory Grading (Days 46 - 65)
 - [ ] **Day 46:** Create Retrofit Interface for Gemini API `v1beta/models/gemini-1.5-flash:generateContent`.

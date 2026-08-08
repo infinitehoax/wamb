@@ -1,0 +1,210 @@
+# 📱 EDUPREP OFFLINE: APP SCREEN BLUEPRINT & USER FLOW
+
+## 🌐 GLOBAL UI ELEMENTS (Visible across multiple screens)
+*   **Top App Bar:** 
+    *   *Left:* Screen Title (Bold, 20sp).
+    *   *Right:* Global Gamification Indicator (A small "Fire" icon ⏣ showing the current Study Streak count, e.g., "14 Days").
+*   **Bottom Navigation Bar (The Hub):**
+    *   Fixed at the bottom. 4 tabs with icons and labels: **Practice** (Book icon), **Classroom** (School icon), **AI Tutor** (Sparkle/Robot icon), **Profile** (User icon).
+    *   *UI Dictate:* Active tab uses the Primary Brand Color. Inactive tabs are grey. Height must comfortably fit 48dp touch targets for each tab.
+*   **Transitions:**
+    *   Moving between Bottom Nav tabs is a cross-fade.
+    *   Moving deeper into a specific flow (e.g., Dashboard -> Active Quiz) uses a horizontal Slide-In from the right. Swiping from the left edge slides the user back.
+
+---
+
+## 🚀 ENTRY FLOW: LAUNCH & ONBOARDING
+
+### Screen 0.1: Splash & Initializing Screen
+*   **Elements:** 
+    *   Center: App Logo (120dp).
+    *   Below Logo: "EduPrep Offline" (Bold, 24sp).
+    *   Bottom: "Initializing Offline Database..." with a linear progress bar.
+*   **Background Logic:** App reads the bundled `questions.json` and writes it to the Room Database. 
+*   **Flow:** Once complete (only happens on the first-ever launch), transitions to Screen 0.2.
+
+### Screen 0.2: Welcome & Profile Setup
+*   **Elements:**
+    *   Large Illustration at the top (Student studying).
+    *   Title: "Let's Get Started" (Bold, 28sp).
+    *   Body: "Enter your username for the global leaderboard." (16sp, left-aligned).
+    *   `TextField`: "Username" (Min height 56dp).
+    *   `Button`: "Start Learning" (Primary Color, 100% width, 56dp height, 16dp bottom margin).
+*   **Flow:** Saves to DataStore -> Routes to **Tab 1: Practice Dashboard**.
+
+---
+
+## 📚 TAB 1: THE PRACTICE HUB (CBT & THEORY)
+
+### Screen 1.0: Practice Dashboard (Main Home)
+*   **Elements:**
+    *   **Header Section:** "Welcome back, [Username]!" (Bold, 24sp).
+    *   **Section 1: Quick Jump:** A large elevated (but un-nested) surface area. 
+        *   Title: "Continue Mock Test".
+        *   Details: "Mathematics - 2022 (Paused at Q14)".
+        *   Button: "Resume" (48dp touch target).
+    *   **Section 2: Objective CBT (Multiple Choice):**
+        *   Icon (List), Title "Objective Past Questions".
+        *   Body: "Practice timed multiple-choice WAEC & JAMB questions."
+        *   `Button`: "Configure Test". Tapping this opens **ModalBottomSheet 1A**.
+    *   **Section 3: Essay & Theory (Hybrid AI Grader):**
+        *   Icon (Pen), Title "Theory & Essay Practice".
+        *   Body: "Type your answers and let our AI examiner grade your essays."
+        *   `Button`: "Select Theory Topic". Routes to **Screen 1.5**.
+*   **Flow:** Central hub for starting any test.
+
+### ModalBottomSheet 1A: CBT Test Setup
+*   *UI Dictate:* Slides up from the bottom. Draggable handle at the top.
+*   **Elements (Step-by-Step selection):**
+    1.  **Subject Row:** "Select Subject" -> Tapping opens a sub-sheet or expands a grid of subjects (Math, English, Physics, etc.).
+    2.  **Year Row:** "Select Year" -> Dropdown list or grid (2010 - 2023, or "All Years").
+    3.  **Topic Row:** "Select Topic" -> Defaults to "All Topics".
+    4.  **Mode Selector (3 Radio Buttons in massive 48dp rows):**
+        *   *Study Mode:* "No timer. Answers revealed instantly."
+        *   *Practice Mode:* "Timer active. Answers at the end."
+        *   *Mock Mode:* "Exam conditions. Final score only."
+    5.  **Sticky Bottom Button:** "Start Exam" (100% width, 56dp height).
+*   **Flow:** Tapping "Start Exam" closes the sheet and routes to **Screen 1.1: Active Quiz**.
+
+### Screen 1.1: Active CBT Quiz
+*   **Elements:**
+    *   **Top Bar:** "Q. 1 of 50" (Center), "14:59" (Right, monospace font, red if < 1 minute). "Star" icon (Left) to bookmark the current question.
+    *   **Question Box:** Left-aligned text, 20sp for readability, 24sp line-height. (If there is an image, it renders above the text, zoomable on tap).
+    *   **Options Area:** 4 rows (A, B, C, D). 
+        *   *UI Dictate:* Each row is a `Row` containing a `RadioButton` and `Text`. The entire row is `clickable` and must be at least `48.dp` tall. Selected row gets a subtle primary color background tint.
+    *   **Bottom Navigation Row (Sticky):**
+        *   Left Button: "Previous" (Outlined).
+        *   Right Button: "Next" (Filled Primary). Changes to "Submit" on the last question.
+*   **Flow:** On "Submit", calculates the score and routes to **Screen 1.2: CBT Results**.
+
+### Screen 1.2: CBT Results & Review
+*   **Elements:**
+    *   **Top Summary Area:** 
+        *   Massive Circular Progress Gauge (e.g., "76%").
+        *   Stats Row: "Score: 38/50", "Time: 24m 12s".
+    *   **Action Buttons Row:** "Retake Test", "AI Tutor" (Opens Screen 3.0 passing the worst question as context).
+    *   **Review List (`LazyColumn`):**
+        *   Displays all 50 questions sequentially.
+        *   Each item shows: The Question, User's Pick (red/green tint), Correct Answer, and the **Explanation text** (left-aligned, 14sp text).
+*   **Flow:** Scrollable review. Tap "Back" to return to the Dashboard.
+
+### Screen 1.5: Theory Topic Selection
+*   **Elements:**
+    *   `LazyColumn` of available essay/theory questions.
+    *   List Items: "Biology: Photosynthesis (2019 Q2)", "Physics: Projectile Motion (2021 Q4)".
+*   **Flow:** Tap an item -> Routes to **Screen 1.6: Active Theory**.
+
+### Screen 1.6: Active Theory & Essay Interface
+*   **Elements:**
+    *   **Top Bar:** Title: "Theory Practice".
+    *   **Question Area:** The prompt (e.g., "State three laws of motion and explain...").
+    *   **Input Area:** A massive `OutlinedTextField` taking up 60% of the screen. Hint text: "Type your detailed answer here...".
+    *   **Bottom Area:** A warning text: "Requires Internet Connection for AI Grading" (if online essay). 
+    *   **Button:** "Submit to AI Examiner" (56dp height).
+*   **Flow:** On tap, if no internet, shows Snackbar. If internet, routes to **Screen 1.7** with a loading skeleton.
+
+### Screen 1.7: Hybrid Grading Results
+*   **Elements:**
+    *   **AI Examiner Verdict:** Large text "AI Grade: 8/10".
+    *   **Missing Keywords Section:** Title "You missed these key points:". Below it, a `FlowRow` of `SuggestionChips` (e.g., [Inertia], [Constant Velocity], [External Force]) styled in red.
+    *   **Detailed Feedback:** A block of left-aligned text generated by Gemini explaining *why* the marks were lost.
+    *   **Button:** "Revise and Retry".
+*   **Flow:** Saves grading to local DB. "Retry" goes back to Screen 1.6 with the text intact so the user can fix it.
+
+---
+
+## 🏫 TAB 2: CLASSROOM (LEARNING MODULES)
+
+### Screen 2.0: Classroom Hub
+*   **Elements:**
+    *   **Search Bar:** Large 56dp search bar at the top ("Search topics, formulas, laws...").
+    *   **Category Grid:** Two big un-nested areas: "Study Notes" & "Virtual Labs".
+    *   **Curriculum Accordion (`LazyColumn`):**
+        *   Subject Header (e.g., "Physics"). Shows a mini progress bar (e.g., "12/40 Topics Read").
+        *   Tapping the header drops down the Topic Items (e.g., "1. Measurements", "2. Motion").
+*   **Flow:** Tap a Topic -> Routes to **Screen 2.1**. Tap Virtual Labs -> Routes to **Screen 2.2**.
+
+### Screen 2.1: Offline Notes Viewer
+*   **Elements:**
+    *   **Content Area:** Deep, long-scrolling screen. Renders Markdown. Bold headers, bullet points, standard spacing (16dp between paragraphs, 24sp line height).
+    *   **Inline Lab Link:** If the note is about pendulums, a special Call-To-Action card appears inside the text: "Launch Interactive Pendulum Lab".
+    *   **Bottom Action:** A sticky bar at the bottom with a Checkbox "Mark as Read" (Updates progress bar) and "Next Topic" button.
+*   **Flow:** Seamless reading.
+
+### Screen 2.2 & 2.3: Virtual Labs Hub & Active Canvas
+*   **Elements (Hub):** Grid of available labs with thumbnail icons (Titration, Pendulum, Circuits).
+*   **Elements (Active Canvas - e.g., Physics):**
+    *   **Top 50%:** A custom Compose `Canvas` drawing the simulation (a swinging pendulum ball on a line). Real-time text overlay on the canvas showing current variables.
+    *   **Bottom 50% (Controls):** 
+        *   Slider 1: "String Length (L)".
+        *   Slider 2: "Gravity (g)".
+        *   *UI Dictate:* Sliders must have large, easy-to-grab 48dp thumbs.
+*   **Flow:** Interactive single screen. No deep navigation needed.
+
+---
+
+## 🤖 TAB 3: AI TUTOR (GEMINI CHAT)
+
+### Screen 3.0: Active Chat Interface
+*   **Elements:**
+    *   **Top Bar:** "AI Tutor" with a green "Online" or red "Offline" status indicator dot. Action Menu (3 dots) -> "Clear Conversation".
+    *   **Chat Area (`LazyColumn`):**
+        *   *AI Message Bubbles:* Surface Variant Color (Light grey), Left-aligned, no tail, 16dp rounded corners. Renders Markdown text and math formulas perfectly.
+        *   *User Message Bubbles:* Primary Brand Color, Right-aligned, white text.
+    *   **Quick Prompts (Horizontal Scroll):** Above the keyboard, a row of contextual chips based on the user's recent activity (e.g., [Explain Photosynthesis], [Give me a math quiz]).
+    *   **Input Area:** `OutlinedTextField` taking up the bottom space. Right-aligned `IconButton` (Send arrow) that is strictly 48dp x 48dp.
+*   **Flow:** Scrolls automatically to the bottom on new message. Internet check blocks sending if offline.
+
+---
+
+## 👤 TAB 4: PROFILE, ANALYTICS & SOCIAL
+
+### Screen 4.0: Profile Dashboard
+*   **Elements:**
+    *   **User Header:** Large Avatar, Username, and Title (e.g., "Jambite Scholar").
+    *   **Streak Widget:** A stylized flame icon and "Current Streak: 5 Days" (Gamification element).
+    *   **Analytics Preview:** A bar chart (using Vico Compose) showing "Test Scores over last 7 days". Minimum 24dp padding from the screen edges so it isn't cramped.
+    *   **Action List (Full-width touch rows, 56dp height each):**
+        *   "Test History" -> Routes to **Screen 4.1**.
+        *   "My Bookmarks" -> Routes to **Screen 4.2**.
+        *   "Global Leaderboard" -> Routes to **Screen 4.3**.
+        *   "Settings" -> Routes to Settings (Dark mode, reset data).
+*   **Flow:** The branching menu for user data.
+
+### Screen 4.1: Test History
+*   **Elements:**
+    *   **Filter Bar:** A chip row at the top ("All", "Mathematics", "English").
+    *   **List (`LazyColumn`):**
+        *   Items: Date ("Yesterday"), Subject ("Physics - Mock"), Score ("45/50 - 90%"). 
+        *   *UI Dictate:* The percentage text is colored Green if >70%, Orange if 50-69%, Red if <50%.
+    *   **Empty State:** If 0 tests taken, show the `ProEmptyState` ("No history yet. Take a practice test to see your progress here!").
+*   **Flow:** Read-only list. Tapping an item could re-open the Review screen (Screen 1.2).
+
+### Screen 4.2: My Bookmarks
+*   **Elements:**
+    *   `LazyColumn` of questions the user starred during CBT.
+    *   Each card shows the Question text and the Answer + Explanation. A "Remove Star" icon allows them to un-bookmark it.
+    *   **Empty State:** `ProEmptyState` ("No bookmarks. Tap the star icon during a test to save hard questions!").
+*   **Flow:** Continuous scroll for quick revision.
+
+### Screen 4.3: Global Leaderboard
+*   **Elements:**
+    *   **Top Bar Indicator:** "Syncing data..." (Progress indicator that appears briefly).
+    *   **My Rank Card:** Pinned at the top of the list. "Your Rank: #142 | High Score: 310".
+    *   **Leaderboard List:**
+        *   Rank 1: Gold Crown Icon, Bold Text, subtle yellow background tint.
+        *   Rank 2: Silver Icon, grey tint.
+        *   Rank 3: Bronze Icon, bronze tint.
+        *   Ranks 4-100: Standard list items. Avatar, Username, Score.
+*   **Flow:** Requires internet. Fetches from Supabase/Firebase. If offline, shows Empty State: "Connect to the internet to see where you rank among thousands of students!"
+
+---
+
+## 🚦 BEHAVIORAL LOGIC RULES FOR THE AI AGENT
+1.  **Strict File Separation:** Create a separate `.kt` file for EVERY single screen mentioned above. Do not dump multiple screens into one `MainActivity.kt`.
+2.  **Navigation Graph:** Map out this entire flow using `NavHost` inside a central `Navigation.kt` file. Use enums or sealed classes for Routes (e.g., `Screen.PracticeHome`, `Screen.ActiveQuiz`).
+3.  **ViewModel Scoping:** Every major tab (Practice, Classroom, Tutor, Profile) must have its own Hilt-injected `ViewModel`.
+4.  **No XML:** Everything described above MUST be built in pure Jetpack Compose.
+5.  **State Hoisting:** Do not manage logic inside the UI composables. Pass `uiState` down from the ViewModel, and pass `onEvent` lambdas up.
+
+*END OF BLUEPRINT. THE AI AGENT WILL READ THIS AND EXECUTE THE SCREENS SEQUENTIALLY DURING THE 150-DAY MANIFEST PLAN.*

@@ -236,12 +236,15 @@ fun ActiveQuizScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             // Options Area
-            val options = listOf(
-                "A" to currentQuestion.optA,
-                "B" to currentQuestion.optB,
-                "C" to currentQuestion.optC,
-                "D" to currentQuestion.optD
-            )
+            val options = remember(currentQuestion) {
+                buildList {
+                    add("A" to currentQuestion.optA)
+                    add("B" to currentQuestion.optB)
+                    add("C" to currentQuestion.optC)
+                    add("D" to currentQuestion.optD)
+                    currentQuestion.optE?.let { add("E" to it) }
+                }
+            }
 
             options.forEach { (letter, optText) ->
                 val isSelected = selectedOption == letter

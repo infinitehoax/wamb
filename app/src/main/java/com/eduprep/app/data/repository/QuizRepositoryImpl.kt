@@ -34,7 +34,13 @@ class QuizRepositoryImpl @Inject constructor(
         topic: String,
         limit: Int
     ): List<Question> {
-        return questionDao.getRandomQuestions(subject, year, topic, limit).map { it.toDomain() }
+        val ids = questionDao.getQuestionIdsByCriteria(subject, year, topic)
+        if (ids.isEmpty()) return emptyList()
+        val randomIds = ids.shuffled().take(limit)
+        val entities = questionDao.getQuestionsByIds(randomIds)
+        // Keep the shuffled order
+        val entitiesMap = entities.associateBy { it.id }
+        return randomIds.mapNotNull { entitiesMap[it]?.toDomain() }
     }
 
     override suspend fun insertQuestions(questions: List<Question>) {

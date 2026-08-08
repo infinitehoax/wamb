@@ -10,6 +10,7 @@ data class Question(
     val optB: String,
     val optC: String,
     val optD: String,
+    val optE: String? = null,
     val answer: String,
     val explanation: String,
     val isTheory: Boolean,

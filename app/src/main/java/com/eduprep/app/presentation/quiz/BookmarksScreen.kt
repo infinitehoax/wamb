@@ -141,12 +141,13 @@ fun BookmarksScreen(
                                 )
 
                                 // Highlight options
-                                val options = listOf(
-                                    "A" to question.optA,
-                                    "B" to question.optB,
-                                    "C" to question.optC,
-                                    "D" to question.optD
-                                )
+                                val options = buildList {
+                                    add("A" to question.optA)
+                                    add("B" to question.optB)
+                                    add("C" to question.optC)
+                                    add("D" to question.optD)
+                                    question.optE?.let { add("E" to it) }
+                                }
 
                                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                     options.forEach { (letter, optText) ->

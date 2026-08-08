@@ -1,0 +1,112 @@
+Here is a comprehensive Developer Product Requirements Document (PRD) for the fully offline WAEC/JAMB Practice & Learning App, incorporating modern Android UI/UX best practices.
+
+---
+
+# 📄 Product Requirements Document (PRD)
+**Product Name:** EduPrep Offline (WAEC & JAMB)
+**Document Version:** 1.0
+**Target Platform:** Android (with potential for iOS cross-platform)
+
+## 1. Executive Summary
+**Vision:** To democratize access to quality exam preparation for African students by providing a comprehensive, **100% offline**, AI-powered learning and testing application tailored for WAEC and JAMB. 
+
+**Problem Statement:** Many students lack consistent internet access and struggle with data costs, limiting their ability to use online exam prep tools, AI tutors, and interactive learning modules.
+
+**Value Proposition:** A completely offline app that brings past questions, mock exams, an interactive curriculum, virtual science labs, and AI-powered grading directly to the student's device without requiring an active internet connection.
+
+---
+
+## 2. User Personas
+1. **The Exam Candidate (Secondary School Student):** Needs to practice past questions repeatedly under exam conditions to build speed and accuracy.
+2. **The Learner:** Needs to read notes, watch offline videos, and understand the foundational concepts according to the official curriculum.
+3. **The Competitor:** Motivated by gamification, leaderboards, and peer-to-peer challenges to stay engaged.
+
+---
+
+## 3. Functional Requirements (Core Features)
+
+### 3.1. Past Questions & Exam Engine
+*The core testing environment with advanced filtering.*
+* **Filtering & Setup:** Users can customize their tests by:
+  * **Subject:** Select single or multiple subjects.
+  * **Year:** Select specific years (e.g., 2010-2023) or "All".
+  * **Topic:** Select specific topics within a subject (e.g., "Algebra" in Mathematics) or "All".
+  * **Time:** Custom time constraints or official exam timing.
+  * **Modifiers:** Shuffle questions, shuffle options.
+* **Practice Types (Modes):**
+  1. **Study Mode:** No timer. Answers and explanations are revealed immediately after attempting each question. No final grading.
+  2. **Practice Mode:** Timer is active. Answers, explanations, and final grading are provided only at the end of the test.
+  3. **Mock Mode:** Strict official timer. Simulates the real JAMB/WAEC CBT environment. No answers/explanations are shown at the end—only the final score to simulate the real exam day.
+
+### 3.2. Classroom & Learning Module
+*A structured learning environment following the official syllabus.*
+* **Curriculum Tracker:** Content organized strictly by official WAEC/JAMB syllabus topics. Visual progress bars show completion percentages.
+* **Study Materials:** Offline rich-text notes, diagrams, and formulas.
+* **Offline Video Lessons:** Compressed, bundled, or downloadable-once video tutorials for complex topics.
+* **Exercises:** Short, topic-specific quizzes at the end of each study module.
+* **Offline AI Tutor:** A locally run, lightweight on-device Large Language Model (e.g., via Google MediaPipe/TensorFlow Lite) that can answer curriculum-specific queries, explain concepts, and guide users through difficult formulas without the internet.
+
+### 3.3. Advanced Tools: Virtual Labs & Theory Grading
+* **Virtual Labs:** Interactive, 2D/3D physics, chemistry, and biology simulations (e.g., Titration, Pendulum swing, Circuit building) built using native game engines or canvas elements.
+* **Theory Answering & AI Grading:**
+  * Users type out answers to WAEC theory questions.
+  * **Local AI Grading Engine:** Uses local NLP (Natural Language Processing) keyword matching, cosine similarity, and semantic analysis against a stored "Answer Key & Marking Guide" to award marks and provide feedback.
+
+### 3.4. Analytics & Progression
+* **Result History:** A log of all past tests taken, categorized by practice type.
+* **Performance Analysis:** Visual charts (bar charts, radar charts) showing strengths and weaknesses across subjects and specific topics over time.
+* **Bookmarking:** Users can "star" or bookmark difficult questions with a single tap to review later in a dedicated "Bookmarks" folder.
+
+### 3.5. Gamification & Social (Offline-First)
+* **Educational Games:** Mini-games (e.g., vocabulary scrambles, math speed runs) to make learning fun.
+* **Local Peer Challenge:** Challenge friends nearby via Bluetooth or Wi-Fi Direct to a timed battle on a specific topic.
+* **Global Leaderboards (Hybrid):** Generates an offline score cryptographically. When the user temporarily connects to the internet (even just to receive a WhatsApp message), the app syncs their score to the global cloud leaderboard.
+
+---
+
+## 4. UI/UX Design Specifications
+Based on modern Android design guidelines and Apple's Human Interface Guidelines, the UI must avoid "novice-like" pitfalls and achieve a premium, professional feel.
+
+### 4.1. Layout & Navigation
+* **Bottom Navigation Bar:** Core modules (Home, Practice, Classroom, Analytics) must be accessible via a standard bottom navigation bar to keep primary actions within the "Thumb Zone".
+* **Responsive Design:** Use `ConstraintLayout` (or Compose equivalents) to ensure the app scales perfectly across small mobile phones and larger Android tablets.
+* **Spacing & Formatting:** Do not cram content. Maintain a strict **8-point grid system**. Ensure ample whitespace (padding and margins) so text does not overlap and the layout breathes.
+
+### 4.2. Typography & Readability
+* **Fonts:** Use maximum two font families (e.g., a modern sans-serif like *Montserrat* or *Roboto*).
+* **Text Size & Contrast:** Base body text must be at least **16sp** (11pt equivalent) for legibility. Ensure high contrast between text and background (e.g., dark grey `#333333` text on off-white backgrounds, rather than pure black/white). Increase line height to improve scanning.
+* **Visual Hierarchy:** Use font weights (Bold, Medium, Regular) predictably to distinguish headers from body copy.
+
+### 4.3. Interactive Elements & Touch Targets
+* **Hit Targets:** All clickable elements (buttons, icons, checkboxes) must have a minimum touch target size of **48x48 dp** to prevent frustrating misclicks, especially during timed exams.
+* **Gestures:** Support natural swipe gestures (e.g., swipe right to go back, swipe between questions).
+* **Visual Feedback:** All buttons must feature Material ripple effects. Transitions between screens should use subtle, smooth animations (e.g., Shared Element Transitions). 
+
+### 4.4. Empty States & Feedback
+* **Explicit Empty States:** When a user searches for a question that doesn't exist, or has no bookmarks, do not just show blank screens. Use **beautiful, high-resolution vector illustrations** (undistorted) paired with helpful text (e.g., "No tasks yet. Create one!").
+* **Loading States:** Use skeleton loaders instead of generic spinning wheels for rendering heavy elements like Analytics charts.
+
+---
+
+## 5. Technical Architecture & Stack
+
+### 5.1. Tech Stack Recommendations
+* **Framework:** **Android Native (Kotlin & Jetpack Compose)** for optimal performance, battery efficiency, and native ML integrations. Alternatively, **Flutter** if iOS deployment is planned concurrently.
+* **Local Database:** **Room Database** (SQLite) to store hundreds of thousands of past questions, options, and offline analytics efficiently without lag.
+* **Media Handling:** Video and Virtual Lab assets should be highly compressed. Use ExoPlayer for smooth offline video playback.
+
+### 5.2. Offline AI Implementation Strategy
+Running AI offline on standard mobile devices requires optimization to avoid app bloat:
+* **Theory Grading:** Implement an ONNX Runtime or TensorFlow Lite local NLP model. Use a lightweight text-embedding model (like MobileBERT) to compare the user's answer vector against the marking guide vector.
+* **AI Tutor:** Pre-package a highly quantized, small-parameter LLM (e.g., Gemma 2B or Llama-3 8B quantized via MLC LLM) that runs directly on device hardware. If device constraints are too tight, use a robust, pre-indexed offline search engine combined with decision-tree logic to simulate conversational tutoring.
+
+### 5.3. App Size & Asset Management
+* Because the app is offline, initial APK/AAB size will be large.
+* **Solution:** Use **Play Feature Delivery (Dynamic Delivery)**. The base app contains the text-based past questions. The user can download "Asset Packs" (Virtual Labs, Video Lessons, AI Models) individually *once* when they have Wi-Fi, which then live offline permanently.
+
+---
+
+## 6. Future Enhancements (Phase 2)
+* **Audio Accessibility:** Text-to-speech reading of questions for visually impaired users.
+* **Study Streaks:** Push notifications (local alarms) reminding users to practice daily to keep their "streak" alive.
+* **University Predictor:** An offline algorithm that takes the user's Mock JAMB/WAEC scores and predicts their admission chances into specific Nigerian/West African universities based on historical cut-off marks.

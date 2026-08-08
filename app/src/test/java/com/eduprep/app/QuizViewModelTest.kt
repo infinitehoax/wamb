@@ -33,8 +33,8 @@ class QuizViewModelTest {
     @Test
     fun `loadQuestions updates state with retrieved questions`() = runTest(testDispatcher) {
         val sampleQuestions = listOf(
-            Question(1, "Math", "Algebra", "2022", "Q1", "A", "B", "C", "D", "A", "Exp1", false),
-            Question(2, "Math", "Algebra", "2022", "Q2", "A", "B", "C", "D", "B", "Exp2", false)
+            Question(1, "Math", "Algebra", "2022", "Q1", "A", "B", "C", "D", null, "A", "Exp1", false),
+            Question(2, "Math", "Algebra", "2022", "Q2", "A", "B", "C", "D", null, "B", "Exp2", false)
         )
         fakeRepository.questionsList = sampleQuestions
 
@@ -59,7 +59,7 @@ class QuizViewModelTest {
     @Test
     fun `selectOption in Practice mode does not lock selection instantly`() = runTest(testDispatcher) {
         val sampleQuestions = listOf(
-            Question(1, "Math", "Algebra", "2022", "Q1", "A", "B", "C", "D", "A", "Exp1", false)
+            Question(1, "Math", "Algebra", "2022", "Q1", "A", "B", "C", "D", null, "A", "Exp1", false)
         )
         fakeRepository.questionsList = sampleQuestions
 
@@ -82,7 +82,7 @@ class QuizViewModelTest {
     @Test
     fun `selectOption in Study mode locks selection and shows explanation`() = runTest(testDispatcher) {
         val sampleQuestions = listOf(
-            Question(1, "Math", "Algebra", "2022", "Q1", "A", "B", "C", "D", "A", "Exp1", false)
+            Question(1, "Math", "Algebra", "2022", "Q1", "A", "B", "C", "D", null, "A", "Exp1", false)
         )
         fakeRepository.questionsList = sampleQuestions
 
@@ -110,9 +110,9 @@ class QuizViewModelTest {
     @Test
     fun `calculateScore returns correct number of correctly answered questions`() = runTest(testDispatcher) {
         val sampleQuestions = listOf(
-            Question(1, "Math", "Algebra", "2022", "Q1", "A", "B", "C", "D", "A", "Exp1", false),
-            Question(2, "Math", "Algebra", "2022", "Q2", "A", "B", "C", "D", "B", "Exp2", false),
-            Question(3, "Math", "Algebra", "2022", "Q3", "A", "B", "C", "D", "C", "Exp3", false)
+            Question(1, "Math", "Algebra", "2022", "Q1", "A", "B", "C", "D", null, "A", "Exp1", false),
+            Question(2, "Math", "Algebra", "2022", "Q2", "A", "B", "C", "D", null, "B", "Exp2", false),
+            Question(3, "Math", "Algebra", "2022", "Q3", "A", "B", "C", "D", null, "C", "Exp3", false)
         )
         fakeRepository.questionsList = sampleQuestions
 
@@ -141,7 +141,7 @@ class QuizViewModelTest {
     @Test
     fun `toggleBookmark saves and deletes bookmark properly`() = runTest(testDispatcher) {
         val sampleQuestions = listOf(
-            Question(1, "Math", "Algebra", "2022", "Q1", "A", "B", "C", "D", "A", "Exp1", false)
+            Question(1, "Math", "Algebra", "2022", "Q1", "A", "B", "C", "D", null, "A", "Exp1", false)
         )
         fakeRepository.questionsList = sampleQuestions
 

@@ -26,17 +26,17 @@ interface QuestionDao {
     suspend fun getDistinctYears(subject: String): List<String>
 
     @Query("""
-        SELECT * FROM questions
+        SELECT id FROM questions
         WHERE (:subject = 'All' OR subject = :subject)
           AND (:year = 'All' OR year = :year)
           AND (:topic = 'All' OR topic = :topic)
-        ORDER BY RANDOM()
-        LIMIT :limit
     """)
-    suspend fun getRandomQuestions(
+    suspend fun getQuestionIdsByCriteria(
         subject: String,
         year: String,
-        topic: String,
-        limit: Int
-    ): List<QuestionEntity>
+        topic: String
+    ): List<Long>
+
+    @Query("SELECT * FROM questions WHERE id IN (:ids)")
+    suspend fun getQuestionsByIds(ids: List<Long>): List<QuestionEntity>
 }

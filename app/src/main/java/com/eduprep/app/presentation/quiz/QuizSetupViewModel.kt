@@ -62,6 +62,7 @@ class QuizSetupViewModel @Inject constructor(
                 optB = "x = 5",
                 optC = "x = 7",
                 optD = "x = 15",
+                optE = "x = 20",
                 answer = "B",
                 explanation = "Adding 5 to both sides of the equation: 3x = 15. Dividing both sides by 3: x = 5. Therefore, option B is correct.",
                 isTheory = false

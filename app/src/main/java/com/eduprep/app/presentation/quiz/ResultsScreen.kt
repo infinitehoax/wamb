@@ -253,6 +253,7 @@ fun ResultsScreen(
                                 "B" -> question.optB
                                 "C" -> question.optC
                                 "D" -> question.optD
+                                "E" -> question.optE ?: ""
                                 else -> "Not attempted"
                             }
                             val correctText = when (question.answer) {
@@ -260,6 +261,7 @@ fun ResultsScreen(
                                 "B" -> question.optB
                                 "C" -> question.optC
                                 "D" -> question.optD
+                                "E" -> question.optE ?: ""
                                 else -> ""
                             }
 

@@ -234,8 +234,8 @@ fun ResultsScreen(
                         }
 
                         // Question Text
-                        Text(
-                            text = question.text,
+                        RichMathText(
+                            content = question.text,
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 fontWeight = FontWeight.Medium,
                                 lineHeight = 24.sp
@@ -266,19 +266,32 @@ fun ResultsScreen(
                             }
 
                             Text(
-                                text = "Your Pick: " + (pickedAnswer ?: "None") + " - " + pickedText,
+                                text = "Your Pick: " + (pickedAnswer ?: "None"),
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Bold,
                                     color = itemColor
                                 )
                             )
+                            RichMathText(
+                                content = pickedText,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            )
 
                             if (!isCorrect) {
+                                Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = "Correct: " + question.answer + " - " + correctText,
+                                    text = "Correct: " + question.answer,
                                     style = MaterialTheme.typography.bodyMedium.copy(
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.primary
+                                    )
+                                )
+                                RichMathText(
+                                    content = correctText,
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 )
                             }
@@ -301,8 +314,8 @@ fun ResultsScreen(
                                         color = MaterialTheme.colorScheme.primary
                                     )
                                 )
-                                Text(
-                                    text = question.explanation.ifBlank { "No explanation available for this question." },
+                                RichMathText(
+                                    content = question.explanation.ifBlank { "No explanation available for this question." },
                                     style = MaterialTheme.typography.bodyMedium.copy(
                                         lineHeight = 22.sp,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant

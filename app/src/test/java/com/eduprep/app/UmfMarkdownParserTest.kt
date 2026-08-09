@@ -4,6 +4,7 @@ import com.eduprep.app.presentation.quiz.ContentBlock
 import com.eduprep.app.presentation.quiz.UmfMarkdownParser
 import com.eduprep.app.presentation.quiz.UmfParser
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -47,5 +48,19 @@ class UmfMarkdownParserTest {
         assertTrue(htmlOutput.contains("<em>italic text</em>"))
         assertTrue(htmlOutput.contains("<u>underline</u>"))
         assertTrue(htmlOutput.contains("<strong><u>bold underline</u></strong>"))
+    }
+
+    @Test
+    fun testParseToHtmlWithSubscriptConflictResolution() {
+        // Chemical and math subscripts/underscores inside math delimiters should remain untouched by markdown parser
+        val textWithMathAndChemicals = "Reacting \\(<math>H_2SO_4</math>\\) with \\(NaOH\\) yields water and salt, where \\(R_1\\) and \\(R_2\\) are independent."
+        val htmlOutput = UmfParser.parseToHtml(textWithMathAndChemicals)
+
+        // Math blocks must preserve the subscripts and NOT be converted to <u> or <em> tags
+        assertTrue(htmlOutput.contains("<math>H_2SO_4</math>"))
+        assertTrue(htmlOutput.contains("\\(R_1\\)"))
+        assertTrue(htmlOutput.contains("\\(R_2\\)"))
+        assertFalse(htmlOutput.contains("<u>2SO</u>"))
+        assertFalse(htmlOutput.contains("<u>1</u>"))
     }
 }

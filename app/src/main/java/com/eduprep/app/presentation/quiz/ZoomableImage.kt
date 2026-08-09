@@ -1,6 +1,7 @@
 package com.eduprep.app.presentation.quiz
 
 import android.graphics.BitmapFactory
+import android.util.Base64
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,8 +33,16 @@ fun rememberAssetBitmap(filename: String): ImageBitmap? {
     val context = LocalContext.current
     return remember(filename) {
         try {
-            context.assets.open("images/$filename").use { inputStream ->
-                BitmapFactory.decodeStream(inputStream).asImageBitmap()
+            if (filename.startsWith("data:image")) {
+                // Decode Base64 image directly from markdown string
+                val base64String = filename.substringAfter("base64,")
+                val imageBytes = Base64.decode(base64String, Base64.DEFAULT)
+                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size).asImageBitmap()
+            } else {
+                // Fallback to local assets
+                context.assets.open("images/$filename").use { inputStream ->
+                    BitmapFactory.decodeStream(inputStream).asImageBitmap()
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()

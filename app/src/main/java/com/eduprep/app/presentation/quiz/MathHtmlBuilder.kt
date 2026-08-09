@@ -10,10 +10,9 @@ object MathHtmlBuilder {
             <html>
             <head>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-                <!-- Fetching Exact Local Files -->
-                <link rel="stylesheet" href="math/katex.css">
-                <script defer src="math/katex.js"></script>
-                <script defer src="math/contrib/auto-render.js" onload="initKaTeX()"></script>
+                <link rel="stylesheet" href="file:///android_asset/math/katex.css">
+                <script defer src="file:///android_asset/math/katex.js"></script>
+                <script defer src="file:///android_asset/math/contrib/auto-render.js" onload="initKaTeX()"></script>
                 <style>
                     body {
                         color: $textColor;
@@ -25,12 +24,12 @@ object MathHtmlBuilder {
                         line-height: 24px;
                         word-wrap: break-word;
                     }
+                    /* Noteless-style tables and blockquotes */
+                    table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+                    table, th, td { border: 1px solid ${if (isDark) "#555" else "#CCC"}; padding: 8px; }
+                    blockquote { border-left: 4px solid #4CAF50; padding-left: 12px; margin-left: 0; }
                     img { max-width: 100%; height: auto; display: block; margin: 8px auto; }
-                    .katex-display {
-                        overflow-x: auto;
-                        overflow-y: hidden;
-                        padding: 4px 0;
-                    }
+                    .katex-display { overflow-x: auto; overflow-y: hidden; padding: 4px 0; }
                 </style>
                 <script>
                     function initKaTeX() {
@@ -40,10 +39,10 @@ object MathHtmlBuilder {
                                     {left: "$$", right: "$$", display: true},
                                     {left: "\\[", right: "\\]", display: true},
                                     {left: "\\(", right: "\\)", display: false},
+                                    {left: "$", right: "$", display: false}, // Added single dollar inline support
                                     {left: "<math>", right: "</math>", display: false}
                                 ],
-                                throwOnError: false,
-                                strict: false
+                                throwOnError: false
                             });
                         }
                     }
@@ -59,46 +58,36 @@ object MathHtmlBuilder {
 
 object UmfParser {
     fun parseToHtml(content: String): String {
-        // More robust Regex to match math blocks without breaking standard LaTeX escaping
-        val pattern = """(\$\$.*?\$\$)|(\\\(.*?\\\))|(\\\[.*?\\\])|(<math>.*?</math>)""".toRegex(RegexOption.DOT_MATCHES_ALL)
-
+        // Regex to match math blocks cleanly, supporting single dollar sign inline math
+        val pattern = """(\$\$.*?\$\$)|(\\\(.*?\\\))|(\\\[.*?\\\])|(\$.*?\$)|(<math>.*?</math>)""".toRegex(RegexOption.DOT_MATCHES_ALL)
         val matches = pattern.findAll(content).toList()
-        if (matches.isEmpty()) {
-            return parseMarkdownToHtml(content)
-        }
+
+        if (matches.isEmpty()) return parseMarkdownToHtml(content)
 
         val htmlBuilder = StringBuilder()
         var lastIdx = 0
 
         for (match in matches) {
             if (match.range.first > lastIdx) {
-                val nonMathText = content.substring(lastIdx, match.range.first)
-                htmlBuilder.append(parseMarkdownToHtml(nonMathText))
+                htmlBuilder.append(parseMarkdownToHtml(content.substring(lastIdx, match.range.first)))
             }
-            // Append math block exactly as-is to preserve backslashes for KaTeX
-            htmlBuilder.append(match.value)
+            htmlBuilder.append(match.value) // Keep math blocks raw for KaTeX
             lastIdx = match.range.last + 1
         }
 
         if (lastIdx < content.length) {
-            val nonMathText = content.substring(lastIdx)
-            htmlBuilder.append(parseMarkdownToHtml(nonMathText))
+            htmlBuilder.append(parseMarkdownToHtml(content.substring(lastIdx)))
         }
 
         return htmlBuilder.toString()
     }
 
     private fun parseMarkdownToHtml(text: String): String {
-        var result = text
-        result = result.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-
+        var result = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
         result = result.replace(Regex("""\*\*_(.*?)_\*\*"""), "<strong><u>$1</u></strong>")
         result = result.replace(Regex("""\*\*(.*?)\*\*"""), "<strong>$1</strong>")
         result = result.replace(Regex("""\*(.*?)\*"""), "<em>$1</em>")
         result = result.replace(Regex("""_(.*?)_"""), "<u>$1</u>")
-
-        // Map newline to HTML breaks
-        result = result.replace("\n", "<br>")
-        return result
+        return result.replace("\n", "<br>")
     }
 }

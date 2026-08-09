@@ -30,6 +30,7 @@ interface QuestionDao {
         WHERE (:subject = 'All' OR subject = :subject)
           AND (:year = 'All' OR year = :year)
           AND (:topic = 'All' OR topic = :topic)
+          AND is_theory = 0
     """)
     suspend fun getQuestionIdsByCriteria(
         subject: String,

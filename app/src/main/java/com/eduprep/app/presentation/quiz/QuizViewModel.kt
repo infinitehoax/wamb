@@ -45,6 +45,10 @@ class QuizViewModel @Inject constructor(
     private val year: String = savedStateHandle["year"] ?: "All"
     private val topic: String = savedStateHandle["topic"] ?: "All"
     private val modeString: String = savedStateHandle["mode"] ?: "PRACTICE"
+    private val limit: Int = savedStateHandle.get<String>("limit")?.toIntOrNull() ?: 40
+    private val durationMinutes: Int = savedStateHandle.get<String>("duration")?.toIntOrNull() ?: 30
+    private val shuffleQuestions: Boolean = savedStateHandle.get<String>("shuffleQuestions")?.toBoolean() ?: false
+    private val shuffleOptions: Boolean = savedStateHandle.get<String>("shuffleOptions")?.toBoolean() ?: false
 
     init {
         val parsedMode = try {
@@ -60,11 +64,21 @@ class QuizViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                // Fetch up to 10 questions for practice/mock
-                val questions = quizRepository.getRandomQuestions(subject, year, topic, 10)
+                val questions = quizRepository.getRandomQuestions(subject, year, topic, limit)
+
+                var processedQuestions = if (shuffleQuestions) {
+                    questions.shuffled()
+                } else {
+                    questions.sortedBy { it.id }
+                }
+
+                if (shuffleOptions) {
+                    processedQuestions = processedQuestions.map { shuffleQuestionOptions(it) }
+                }
+
                 _uiState.update { state ->
                     state.copy(
-                        questions = questions,
+                        questions = processedQuestions,
                         isLoading = false
                     )
                 }
@@ -83,11 +97,7 @@ class QuizViewModel @Inject constructor(
             return
         }
 
-        val totalTime = when (quizMode) {
-            QuizMode.MOCK -> 30 * 60L // 30 mins
-            QuizMode.PRACTICE -> 15 * 60L // 15 mins
-            else -> 0L
-        }
+        val totalTime = durationMinutes * 60L
 
         _uiState.update { it.copy(remainingTimeSeconds = totalTime) }
 
@@ -101,6 +111,38 @@ class QuizViewModel @Inject constructor(
             _uiState.update { it.copy(isTimeUp = true) }
             submitQuiz()
         }
+    }
+
+    private fun shuffleQuestionOptions(q: Question): Question {
+        val optionsList = mutableListOf(
+            Pair("A", q.optA), Pair("B", q.optB), Pair("C", q.optC), Pair("D", q.optD)
+        )
+        if (q.optE != null) optionsList.add(Pair("E", q.optE))
+
+        // 1. Identify the exact text of the correct answer before shuffling
+        val correctText = optionsList.find { it.first == q.answer }?.second
+
+        // 2. Shuffle the items
+        val shuffledList = optionsList.map { it.second }.shuffled()
+
+        // 3. Re-assign and find the new correct key
+        val newAnswerKey = when (correctText) {
+            shuffledList[0] -> "A"
+            shuffledList[1] -> "B"
+            shuffledList[2] -> "C"
+            shuffledList[3] -> "D"
+            else -> if (shuffledList.size > 4) "E" else "A"
+        }
+
+        // 4. Return the modified question
+        return q.copy(
+            optA = shuffledList[0],
+            optB = shuffledList[1],
+            optC = shuffledList[2],
+            optD = shuffledList[3],
+            optE = if (shuffledList.size > 4) shuffledList[4] else null,
+            answer = newAnswerKey
+        )
     }
 
     fun selectOption(option: String) {

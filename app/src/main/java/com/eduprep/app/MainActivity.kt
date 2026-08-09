@@ -13,11 +13,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -47,12 +48,22 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            EduPrepTheme {
+            val context = LocalContext.current
+            var currentThemeSetting by remember { mutableStateOf(com.eduprep.app.data.local.ThemePreferences.getTheme(context)) }
+            val isDarkTheme = when (currentThemeSetting) {
+                "Light" -> false
+                "Dark" -> true
+                else -> androidx.compose.foundation.isSystemInDarkTheme()
+            }
+            EduPrepTheme(darkTheme = isDarkTheme) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppMainScreen()
+                    AppMainScreen(
+                        currentTheme = currentThemeSetting,
+                        onThemeChanged = { currentThemeSetting = it }
+                    )
                 }
             }
         }
@@ -61,7 +72,10 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppMainScreen() {
+fun AppMainScreen(
+    currentTheme: String,
+    onThemeChanged: (String) -> Unit
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -96,6 +110,17 @@ fun AppMainScreen() {
                             },
                             style = MaterialTheme.typography.titleLarge
                         )
+                    },
+                    actions = {
+                        if (currentRoute == Screen.Profile.route) {
+                            IconButton(onClick = { navController.navigate("settings") }) {
+                                Icon(
+                                    imageVector = Icons.Default.Settings,
+                                    contentDescription = "Settings",
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+                        }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.primary,
@@ -168,8 +193,8 @@ fun AppMainScreen() {
         ) {
             composable(Screen.PracticeHome.route) {
                 PracticeScreen(
-                    onStartQuiz = { subject, year, topic, mode ->
-                        navController.navigate("quiz_flow/$subject/$year/$topic/$mode")
+                    onStartQuiz = { subject, year, topic, mode, limit, duration, shuffleQ, shuffleOpt ->
+                        navController.navigate("quiz_flow/$subject/$year/$topic/$mode/$limit/$duration/$shuffleQ/$shuffleOpt")
                     },
                     onStartTheory = { questionId ->
                         navController.navigate("theory_flow/$questionId")
@@ -197,35 +222,44 @@ fun AppMainScreen() {
                 )
             }
 
+            // Settings Screen
+            composable("settings") {
+                com.eduprep.app.presentation.SettingsScreen(
+                    onBack = { navController.popBackStack() },
+                    currentTheme = currentTheme,
+                    onThemeChanged = onThemeChanged
+                )
+            }
+
             // Quiz Flow nested navigation to share QuizViewModel
             navigation(
-                startDestination = Screen.ActiveQuiz.route,
-                route = "quiz_flow/{subject}/{year}/{topic}/{mode}"
+                startDestination = "active_quiz",
+                route = "quiz_flow/{subject}/{year}/{topic}/{mode}/{limit}/{duration}/{shuffleQuestions}/{shuffleOptions}"
             ) {
-                composable(route = Screen.ActiveQuiz.route) { backStackEntry ->
+                composable(route = "active_quiz") { backStackEntry ->
                     val parentEntry = remember(backStackEntry) {
-                        navController.getBackStackEntry("quiz_flow/{subject}/{year}/{topic}/{mode}")
+                        navController.getBackStackEntry("quiz_flow/{subject}/{year}/{topic}/{mode}/{limit}/{duration}/{shuffleQuestions}/{shuffleOptions}")
                     }
                     val quizViewModel: QuizViewModel = hiltViewModel(parentEntry)
                     ActiveQuizScreen(
                         onBack = { navController.popBackStack() },
                         onSubmitSuccess = { _, _, _ ->
-                            navController.navigate(Screen.Results.route)
+                            navController.navigate("results")
                         },
                         viewModel = quizViewModel
                     )
                 }
 
-                composable(route = Screen.Results.route) { backStackEntry ->
+                composable(route = "results") { backStackEntry ->
                     val parentEntry = remember(backStackEntry) {
-                        navController.getBackStackEntry("quiz_flow/{subject}/{year}/{topic}/{mode}")
+                        navController.getBackStackEntry("quiz_flow/{subject}/{year}/{topic}/{mode}/{limit}/{duration}/{shuffleQuestions}/{shuffleOptions}")
                     }
                     val quizViewModel: QuizViewModel = hiltViewModel(parentEntry)
                     ResultsScreen(
                         viewModel = quizViewModel,
                         onRetake = {
                             // Pop results to start quiz again
-                            navController.popBackStack(Screen.ActiveQuiz.route, inclusive = false)
+                            navController.popBackStack("active_quiz", inclusive = false)
                         },
                         onHome = {
                             // Pop entire quiz flow to go back to main practice dashboard

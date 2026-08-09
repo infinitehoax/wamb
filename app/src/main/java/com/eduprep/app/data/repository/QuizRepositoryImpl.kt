@@ -62,4 +62,12 @@ class QuizRepositoryImpl @Inject constructor(
     override suspend fun getBookmarkedQuestions(): List<Question> {
         return bookmarkDao.getBookmarkedQuestions().map { it.toDomain() }
     }
+
+    override suspend fun getTheoryQuestions(): List<Question> {
+        return questionDao.getTheoryQuestions().map { it.toDomain() }
+    }
+
+    override suspend fun getQuestionById(id: Long): Question? {
+        return questionDao.getQuestionById(id)?.toDomain()
+    }
 }

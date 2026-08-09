@@ -39,4 +39,7 @@ interface QuestionDao {
 
     @Query("SELECT * FROM questions WHERE id IN (:ids)")
     suspend fun getQuestionsByIds(ids: List<Long>): List<QuestionEntity>
+
+    @Query("SELECT * FROM questions WHERE is_theory = 1")
+    suspend fun getTheoryQuestions(): List<QuestionEntity>
 }

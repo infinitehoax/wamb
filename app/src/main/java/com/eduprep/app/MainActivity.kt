@@ -33,9 +33,12 @@ import com.eduprep.app.presentation.PracticeScreen
 import com.eduprep.app.presentation.ProfileScreen
 import com.eduprep.app.presentation.Screen
 import com.eduprep.app.presentation.quiz.ActiveQuizScreen
+import com.eduprep.app.presentation.quiz.ActiveTheoryScreen
 import com.eduprep.app.presentation.quiz.BookmarksScreen
 import com.eduprep.app.presentation.quiz.QuizViewModel
 import com.eduprep.app.presentation.quiz.ResultsScreen
+import com.eduprep.app.presentation.quiz.TheoryResultsScreen
+import com.eduprep.app.presentation.quiz.TheoryViewModel
 import com.eduprep.app.ui.theme.EduPrepTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -167,6 +170,9 @@ fun AppMainScreen() {
                 PracticeScreen(
                     onStartQuiz = { subject, year, topic, mode ->
                         navController.navigate("quiz_flow/$subject/$year/$topic/$mode")
+                    },
+                    onStartTheory = { questionId ->
+                        navController.navigate("theory_flow/$questionId")
                     }
                 )
             }
@@ -223,6 +229,47 @@ fun AppMainScreen() {
                         },
                         onHome = {
                             // Pop entire quiz flow to go back to main practice dashboard
+                            navController.popBackStack(Screen.PracticeHome.route, inclusive = false)
+                        }
+                    )
+                }
+            }
+
+            // Theory Flow nested navigation to share TheoryViewModel
+            navigation(
+                startDestination = Screen.ActiveTheory.route,
+                route = "theory_flow/{questionId}"
+            ) {
+                composable(
+                    route = Screen.ActiveTheory.route,
+                    arguments = listOf(navArgument("questionId") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val parentEntry = remember(backStackEntry) {
+                        navController.getBackStackEntry("theory_flow/{questionId}")
+                    }
+                    val theoryViewModel: TheoryViewModel = hiltViewModel(parentEntry)
+                    ActiveTheoryScreen(
+                        onBack = { navController.popBackStack() },
+                        onSubmitSuccess = { questionId ->
+                            navController.navigate("active_theory/$questionId/results") {
+                                popUpTo("active_theory/$questionId") { inclusive = true }
+                            }
+                        },
+                        viewModel = theoryViewModel
+                    )
+                }
+
+                composable(
+                    route = "active_theory/{questionId}/results",
+                    arguments = listOf(navArgument("questionId") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val parentEntry = remember(backStackEntry) {
+                        navController.getBackStackEntry("theory_flow/{questionId}")
+                    }
+                    val theoryViewModel: TheoryViewModel = hiltViewModel(parentEntry)
+                    TheoryResultsScreen(
+                        viewModel = theoryViewModel,
+                        onBack = {
                             navController.popBackStack(Screen.PracticeHome.route, inclusive = false)
                         }
                     )

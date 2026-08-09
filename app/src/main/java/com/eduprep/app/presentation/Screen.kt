@@ -10,4 +10,8 @@ sealed class Screen(val route: String, val title: String) {
     object ActiveQuiz : Screen("active_quiz", "Active Quiz")
     object Results : Screen("results", "Results")
     object Bookmarks : Screen("bookmarks", "My Bookmarks")
+
+    // Sub-screens for theory flows
+    object ActiveTheory : Screen("active_theory/{questionId}", "Active Theory")
+    object TheoryResults : Screen("active_theory/{questionId}/results", "Theory Results")
 }

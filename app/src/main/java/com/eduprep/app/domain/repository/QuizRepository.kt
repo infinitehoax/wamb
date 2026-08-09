@@ -17,4 +17,6 @@ interface QuizRepository {
     suspend fun deleteBookmark(questionId: Long)
     suspend fun isBookmarked(questionId: Long): Boolean
     suspend fun getBookmarkedQuestions(): List<Question>
+    suspend fun getTheoryQuestions(): List<Question>
+    suspend fun getQuestionById(id: Long): Question?
 }

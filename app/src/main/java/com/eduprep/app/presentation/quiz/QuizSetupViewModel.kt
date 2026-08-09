@@ -20,7 +20,8 @@ data class QuizSetupUiState(
     val selectedTopic: String = "All",
     val selectedYear: String = "All",
     val selectedMode: QuizMode = QuizMode.PRACTICE,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val theoryQuestions: List<Question> = emptyList()
 )
 
 @HiltViewModel
@@ -345,6 +346,51 @@ class QuizSetupViewModel @Inject constructor(
                     Thus, option **A** is correct.
                 """.trimIndent(),
                 isTheory = false
+            ),
+            Question(
+                id = 11,
+                subject = "Physics",
+                topic = "Mechanics",
+                year = "2022",
+                text = "A body of mass 5 kg is pulled with a constant force. If it accelerates at 3 m/s², what is the magnitude of the applied force in Newtons?",
+                optA = "",
+                optB = "",
+                optC = "",
+                optD = "",
+                answer = "",
+                explanation = "Stating and applying Newton's second law: F = m * a. Substitute m = 5 kg and a = 3 m/s² to get F = 15 N. Keywords: force, mass, acceleration, Newton.",
+                isTheory = true,
+                exactMathAnswer = "15"
+            ),
+            Question(
+                id = 12,
+                subject = "Chemistry",
+                topic = "Electrolysis",
+                year = "2021",
+                text = "Describe the electrolysis of acidified water. State the reaction occurring at the anode and the cathode, and explain why dilute sulfuric acid is added.",
+                optA = "",
+                optB = "",
+                optC = "",
+                optD = "",
+                answer = "",
+                explanation = "Acidified water electrolysis: 1. Water is a weak electrolyte, dilute sulfuric acid is added to increase electrical conductivity. 2. At the cathode, hydrogen ions are reduced to produce Hydrogen gas (H2). 3. At the anode, hydroxide ions are oxidized to produce Oxygen gas (O2). Keywords: hydrogen, oxygen, conductivity, sulfuric acid.",
+                isTheory = true,
+                exactMathAnswer = null
+            ),
+            Question(
+                id = 13,
+                subject = "Biology",
+                topic = "Photosynthesis",
+                year = "2022",
+                text = "Explain the light-dependent and light-independent stages of photosynthesis. Where in the chloroplast does each stage occur?",
+                optA = "",
+                optB = "",
+                optC = "",
+                optD = "",
+                answer = "",
+                explanation = "Light-dependent stage: Occurs in the thylakoid membrane (grana). Chlorophyll absorbs light energy to split water (photolysis) producing ATP and NADPH. Light-independent stage (Calvin Cycle): Occurs in the stroma. Carbon dioxide is fixed to produce glucose using ATP and NADPH. Keywords: thylakoid, stroma, photolysis, chlorophyll, glucose, calvin.",
+                isTheory = true,
+                exactMathAnswer = null
             )
         )
         quizRepository.insertQuestions(sampleQuestions)
@@ -356,10 +402,12 @@ class QuizSetupViewModel @Inject constructor(
             try {
                 val dbSubjects = quizRepository.getDistinctSubjects()
                 val finalSubjects = listOf("All") + dbSubjects
+                val theoryQ = quizRepository.getTheoryQuestions()
                 _uiState.update { state ->
                     state.copy(
                         subjects = finalSubjects,
                         selectedSubject = if (state.selectedSubject in finalSubjects) state.selectedSubject else "All",
+                        theoryQuestions = theoryQ,
                         isLoading = false
                     )
                 }

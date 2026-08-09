@@ -14,6 +14,8 @@ val localProperties = Properties().apply {
     }
 }
 val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY") ?: System.getenv("GEMINI_API_KEY") ?: ""
+val appSecretToken = localProperties.getProperty("APP_SECRET_TOKEN") ?: System.getenv("APP_SECRET_TOKEN") ?: "k96hGD9HFFgr9NZuTuEmNNbILdFmLJXLkrf7x7Rng9WIEK4s06t6QCietCzpBWBKZwCws185aQxM3GghflCzZbRlUNOyHLnCUN1JabCbJuBrBWe6r2O5QyEx0CRLFtQ27BI6K8mkVdufISM2EHIAO14YQIhReRgSSTsQOaoisSVSmY7ZvIbLqWtuF2wIuvN2Wvvf2pMC4ePnNI7qfIHJeG5XfYO556KAAQDhMAgOFKcGarNwiutk6KNCKZ3P1Y62"
+val backendBaseUrl = localProperties.getProperty("BACKEND_BASE_URL") ?: System.getenv("BACKEND_BASE_URL") ?: "https://eduprepwambng.pythonanywhere.com/"
 
 android {
     namespace = "com.eduprep.app"
@@ -32,6 +34,8 @@ android {
         }
 
         buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
+        buildConfigField("String", "APP_SECRET_TOKEN", "\"$appSecretToken\"")
+        buildConfigField("String", "BACKEND_BASE_URL", "\"$backendBaseUrl\"")
     }
 
     buildTypes {

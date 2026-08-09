@@ -199,4 +199,12 @@ class FakeQuizRepository : QuizRepository {
     override suspend fun getBookmarkedQuestions(): List<Question> {
         return questionsList.filter { bookmarkedIds.contains(it.id) }
     }
+
+    override suspend fun getTheoryQuestions(): List<Question> {
+        return questionsList.filter { it.isTheory }
+    }
+
+    override suspend fun getQuestionById(id: Long): Question? {
+        return questionsList.find { it.id == id }
+    }
 }

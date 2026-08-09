@@ -262,6 +262,87 @@ You are restricted to these exact, modern frameworks. **Do not use deprecated li
 - [ ] **Day 149:** Generate App Icon using Android Studio Asset Studio (Adaptive Icons).
 - [ ] **Day 150:** Final commit, tag `v1.0.0`, push, and deliver the final compiled APK.
 
+### PHASE 8: Notification & Retention Engine (Days 151 - 155)
+- [ ] **Day 151: Permissions & Setup.** Update `AndroidManifest.xml` with `POST_NOTIFICATIONS`, `SCHEDULE_EXACT_ALARM`, and `RECEIVE_BOOT_COMPLETED`. Update `build.gradle.kts` if any new AndroidX dependencies are needed.
+- [ ] **Day 152: The Notification Helper.** Create `NotificationHelper.kt`. Implement the Android O Notification Channel setup. Create the `showStudyReminder` function with a `PendingIntent` that routes directly to `MainActivity`. Use a random motivational string for the content.
+- [ ] **Day 153: The Alarm Manager & Receivers.** Create `StudyReminderManager.kt` to handle exact alarm scheduling. Create `StudyReminderReceiver.kt` to catch the alarm and trigger the notification. Create `BootReceiver.kt` to catch device restarts and reschedule the alarm from `DataStore`. Register both receivers in the Manifest.
+- [ ] **Day 154: State & DataStore.** Update the Profile ViewModel to store two new preferences in `DataStore`: `isReminderEnabled` (Boolean) and `reminderTimeHourMin` (String, e.g., "18:00").
+- [ ] **Day 155: UI & Permissions.** Update `ProfileScreen.kt`. Add a "Study Reminders" card. Implement the Android 13 runtime permission request for notifications. Implement a Material 3 `TimePicker` to let the user choose their study time. Wire the UI to the `StudyReminderManager`.
+
+
+
+# 🔔 THE EDUPREP LOCAL NOTIFICATION ENGINE (BLUEPRINT)
+
+## 📌 1. THE ARCHITECTURE (How it works offline)
+We will use Android's `AlarmManager` combined with a `BroadcastReceiver`. 
+*Why not `WorkManager`?* Because `WorkManager` is designed for deferrable background tasks (like syncing). If you use `WorkManager` for a 5:00 PM reminder, Android's battery-saving "Doze Mode" might delay it until 8:00 PM. `AlarmManager` ensures the notification fires exactly at the time the student sets.
+
+### The Flow:
+1. **User sets a time** (e.g., 6:00 PM) in the Profile/Settings UI.
+2. App uses `AlarmManager` to schedule an intent for 6:00 PM daily.
+3. At 6:00 PM, the Android OS wakes up our `StudyReminderReceiver`.
+4. The receiver builds a `NotificationCompat` message and posts it.
+5. User taps it -> `PendingIntent` fires -> `MainActivity` opens.
+6. **Device Reboot:** If the user turns their phone off and on, all alarms are wiped by the OS. We must use a `BootReceiver` to automatically reschedule the alarm when the phone turns on.
+
+---
+
+## 🔐 2. ANDROID MANIFEST & PERMISSIONS
+Modern Android (Android 13 / API 33+) is very strict about notifications. The AI must add these to `AndroidManifest.xml`:
+
+1.  **Permissions:**
+    *   `<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />` (To show the notification).
+    *   `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />` (For precise timing).
+    *   `<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />` (To restore alarms after restart).
+    *   `<uses-permission android:name="android.permission.VIBRATE" />`
+2.  **Receivers (Inside `<application>`):**
+    *   `<receiver android:name=".data.notifications.StudyReminderReceiver" android:exported="false" />`
+    *   `<receiver android:name=".data.notifications.BootReceiver" android:exported="true">` with `<intent-filter><action android:name="android.intent.action.BOOT_COMPLETED" /></intent-filter>`
+
+---
+
+## 🧩 3. REQUIRED KOTLIN COMPONENTS
+
+### A. `NotificationHelper.kt` (The Builder)
+A utility class to handle Android 8.0+ Notification Channels and build the actual UI of the notification.
+*   **Channel ID:** `"study_reminders"`
+*   **Channel Name:** `"Daily Study Reminders"`
+*   **Intent:** Must create an explicit `Intent` for `MainActivity::class.java` wrapped in a `PendingIntent.getActivity()` with `PendingIntent.FLAG_IMMUTABLE`.
+*   **Gamification Copy:** Array of random motivational strings to keep it fresh:
+    *   *"Your WAEC won't pass itself! Time to study. 📚"*
+    *   *"Keep your study streak alive! 5 quick questions await. 🔥"*
+    *   *"JAMB prep time! Let's crush a quick mock exam. 🚀"*
+
+### B. `StudyReminderManager.kt` (The Scheduler)
+A Singleton class injected via Hilt that handles the `AlarmManager`.
+*   Functions: `scheduleDailyReminder(timeInMillis)`, `cancelReminder()`, `isReminderSet()`.
+*   Logic: Uses `alarmManager.setRepeating(...)` or `setExactAndAllowWhileIdle()` to schedule the `PendingIntent` targeting the `StudyReminderReceiver`.
+
+### C. `StudyReminderReceiver.kt` (The Trigger)
+Extends `BroadcastReceiver`.
+*   `onReceive(context, intent)`: When this is called, it triggers `NotificationHelper.showNotification()`.
+
+### D. `BootReceiver.kt` (The Restorer)
+Extends `BroadcastReceiver`.
+*   `onReceive()`: Checks if the intent action is `BOOT_COMPLETED`. Reads the user's saved reminder time from `DataStore` (Preferences) and calls `StudyReminderManager.scheduleDailyReminder()` so the user doesn't lose their reminders after restarting their phone.
+
+---
+
+## 📱 4. UI/UX: THE SETTINGS SCREEN
+We need a place for the user to control this. We will add a "Study Reminders" section to the `ProfileScreen`.
+
+*   **UI Dictate (The Toggle):** A Material 3 `ListItem`. 
+    *   *Headline:* "Daily Study Reminder"
+    *   *Supporting text:* "Remind me at 6:00 PM"
+    *   *Trailing:* A `Switch` (Toggle on/off).
+*   **UI Dictate (The Time Picker):** When the user taps the row (if the switch is on), it opens the standard Material 3 `TimePickerDialog` (or a `ModalBottomSheet` with a TimePicker) for them to select their preferred study time.
+*   **Permission Handling:** When they toggle the switch to ON for the first time, the UI MUST call `rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission())` to ask the user for `POST_NOTIFICATIONS` permission (Android 13+). If denied, the switch snaps back to OFF.
+
+***
+
+## 📅 THE AI EXECUTION BACKLOG: PHASE 8
+*When you are ready to build this, paste this backlog to your AI.*
+
 ---
 **FINAL AUTONOMOUS EXECUTION COMMAND:**
 You are to operate as an elite developer. Read the 150-Day Backlog above. Locate the first incomplete `[ ]` task. Generate the required Kotlin/Compose code. Enforce all constraints from the UI/UX Dictatorship and Architecture Laws. Commit changes to `main`. Update your status memory. Never break the 8dp grid or 48dp touch target rule. Await next command.

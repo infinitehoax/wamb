@@ -224,8 +224,8 @@ fun ActiveQuizScreen(
             }
 
             // Question text
-            Text(
-                text = currentQuestion.text,
+            RichMathText(
+                content = currentQuestion.text,
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontSize = 18.sp,
                     lineHeight = 26.sp,
@@ -288,7 +288,7 @@ fun ActiveQuizScreen(
                             .fillMaxWidth()
                             .sizeIn(minHeight = 56.dp)
                             .padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.Top
                     ) {
                         // Styled option letter circle
                         Box(
@@ -311,8 +311,8 @@ fun ActiveQuizScreen(
 
                         Spacer(modifier = Modifier.width(16.dp))
 
-                        Text(
-                            text = optText,
+                        RichMathText(
+                            content = optText,
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 color = MaterialTheme.colorScheme.onSurface
                             ),
@@ -357,8 +357,8 @@ fun ActiveQuizScreen(
 
                         HorizontalDivider()
 
-                        Text(
-                            text = currentQuestion.explanation.ifBlank { "No explanation provided." },
+                        RichMathText(
+                            content = currentQuestion.explanation.ifBlank { "No explanation provided." },
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 lineHeight = 24.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant

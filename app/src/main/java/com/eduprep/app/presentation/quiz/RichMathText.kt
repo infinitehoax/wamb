@@ -43,7 +43,9 @@ fun RichMathText(
                         block.content.contains("$$") ||
                                 block.content.contains("\\(") ||
                                 block.content.contains("\\\\(") ||
-                                block.content.contains("<math>")
+                                block.content.contains("<math>") ||
+                                // Single $ inline math support
+                                block.content.contains("$")
                     }
 
                     if (!hasMath) {

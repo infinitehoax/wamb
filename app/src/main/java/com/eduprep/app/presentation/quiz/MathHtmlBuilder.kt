@@ -1,7 +1,6 @@
 package com.eduprep.app.presentation.quiz
 
 object MathHtmlBuilder {
-
     fun buildHtml(content: String, isDark: Boolean): String {
         val textColor = if (isDark) "#FAFAFA" else "#121212"
         val parsedBody = UmfParser.parseToHtml(content)
@@ -10,10 +9,11 @@ object MathHtmlBuilder {
             <!DOCTYPE html>
             <html>
             <head>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-                <link rel="stylesheet" href="file:///android_asset/math/katex.min.css">
-                <script defer src="file:///android_asset/math/katex.min.js"></script>
-                <script defer src="file:///android_asset/math/contrib/auto-render.min.js" onload="initKaTeX()"></script>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+                <!-- Fetching Exact Local Files -->
+                <link rel="stylesheet" href="math/katex.css">
+                <script defer src="math/katex.js"></script>
+                <script defer src="math/contrib/auto-render.js" onload="initKaTeX()"></script>
                 <style>
                     body {
                         color: $textColor;
@@ -23,8 +23,9 @@ object MathHtmlBuilder {
                         font-family: sans-serif;
                         font-size: 16px;
                         line-height: 24px;
+                        word-wrap: break-word;
                     }
-                    /* Custom scrollbar and overflow styles */
+                    img { max-width: 100%; height: auto; display: block; margin: 8px auto; }
                     .katex-display {
                         overflow-x: auto;
                         overflow-y: hidden;
@@ -33,15 +34,18 @@ object MathHtmlBuilder {
                 </style>
                 <script>
                     function initKaTeX() {
-                        renderMathInElement(document.body, {
-                            delimiters: [
-                                {left: "$$", right: "$$", display: true},
-                                {left: "\\\\(", right: "\\\\)", display: false},
-                                {left: "\\(", right: "\\)", display: false},
-                                {left: "<math>", right: "</math>", display: false}
-                            ],
-                            throwOnError: false
-                        });
+                        if (typeof renderMathInElement !== 'undefined') {
+                            renderMathInElement(document.body, {
+                                delimiters: [
+                                    {left: "$$", right: "$$", display: true},
+                                    {left: "\\[", right: "\\]", display: true},
+                                    {left: "\\(", right: "\\)", display: false},
+                                    {left: "<math>", right: "</math>", display: false}
+                                ],
+                                throwOnError: false,
+                                strict: false
+                            });
+                        }
                     }
                 </script>
             </head>
@@ -54,10 +58,9 @@ object MathHtmlBuilder {
 }
 
 object UmfParser {
-
     fun parseToHtml(content: String): String {
-        // Regex to match math blocks: block $$, double-backslashed inline \\( ... \\), single-backslashed inline \( ... \), and <math>
-        val pattern = """(\$\$.*?\$\$)|(\\\\\\\(.*?\\\\\\\))|(\\\(.*?\\\))|(<math>.*?</math>)""".toRegex(RegexOption.DOT_MATCHES_ALL)
+        // More robust Regex to match math blocks without breaking standard LaTeX escaping
+        val pattern = """(\$\$.*?\$\$)|(\\\(.*?\\\))|(\\\[.*?\\\])|(<math>.*?</math>)""".toRegex(RegexOption.DOT_MATCHES_ALL)
 
         val matches = pattern.findAll(content).toList()
         if (matches.isEmpty()) {
@@ -72,7 +75,7 @@ object UmfParser {
                 val nonMathText = content.substring(lastIdx, match.range.first)
                 htmlBuilder.append(parseMarkdownToHtml(nonMathText))
             }
-            // Append math block exactly as-is to preserve backslashes for KaTeX parsing
+            // Append math block exactly as-is to preserve backslashes for KaTeX
             htmlBuilder.append(match.value)
             lastIdx = match.range.last + 1
         }
@@ -87,18 +90,11 @@ object UmfParser {
 
     private fun parseMarkdownToHtml(text: String): String {
         var result = text
-        // Safe escaping of HTML control chars
-        result = result.replace("&", "&amp;")
-        result = result.replace("<", "&lt;")
-        result = result.replace(">", "&gt;")
+        result = result.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
-        // Bold-underline: **_text_** -> <strong><u>text</u></strong>
         result = result.replace(Regex("""\*\*_(.*?)_\*\*"""), "<strong><u>$1</u></strong>")
-        // Bold: **text** -> <strong>text</strong>
         result = result.replace(Regex("""\*\*(.*?)\*\*"""), "<strong>$1</strong>")
-        // Italics: *text* -> <em>text</em>
         result = result.replace(Regex("""\*(.*?)\*"""), "<em>$1</em>")
-        // Underline: _text_ -> <u>text</u>
         result = result.replace(Regex("""_(.*?)_"""), "<u>$1</u>")
 
         // Map newline to HTML breaks

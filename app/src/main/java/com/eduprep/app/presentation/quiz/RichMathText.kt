@@ -72,10 +72,12 @@ fun RichMathText(
                         AndroidView(
                             factory = { context ->
                                 WebView(context).apply {
-                                    // Make WebView transparent to blend perfectly with Material Design background
+                                    // THE FIX: Explicitly tell WebView to wrap its content height
+                                    layoutParams = android.view.ViewGroup.LayoutParams(
+                                        android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                                        android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+                                    )
                                     setBackgroundColor(android.graphics.Color.TRANSPARENT)
-
-                                    // Disable scroll bars & interaction so it acts purely as a label
                                     isVerticalScrollBarEnabled = false
                                     isHorizontalScrollBarEnabled = false
                                     overScrollMode = View.OVER_SCROLL_NEVER
@@ -86,7 +88,6 @@ fun RichMathText(
                                         domStorageEnabled = true
                                         useWideViewPort = false
                                         loadWithOverviewMode = true
-                                        cacheMode = WebSettings.LOAD_NO_CACHE
                                     }
                                 }
                             },
@@ -101,7 +102,7 @@ fun RichMathText(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .wrapContentHeight() // Allow it to wrap content dynamically
+                                .wrapContentHeight()
                         )
                     }
                 }

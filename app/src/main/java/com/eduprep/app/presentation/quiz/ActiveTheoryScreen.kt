@@ -1,5 +1,6 @@
 package com.eduprep.app.presentation.quiz
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -132,6 +133,39 @@ fun ActiveTheoryScreen(
                                 fontWeight = FontWeight.Medium
                             )
                         )
+                    }
+
+                    // Dynamic Banner (Status Banner)
+                    AnimatedVisibility(visible = question != null) {
+                        if (question.exactMathAnswer != null) {
+                            Card(
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                            ) {
+                                Text(
+                                    text = "🤖 Offline Math Grader: Please type the exact numerical value (e.g., 4.5, 10m/s).",
+                                    modifier = Modifier.padding(12.dp),
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                )
+                            }
+                        } else {
+                            Card(
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                            ) {
+                                Text(
+                                    text = "☁️ AI Examiner: Detailed essay required. Wi-Fi needed to submit.",
+                                    modifier = Modifier.padding(12.dp),
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        color = MaterialTheme.colorScheme.onErrorContainer,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                )
+                            }
+                        }
                     }
 
                     // Answer Input area

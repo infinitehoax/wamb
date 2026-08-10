@@ -21,7 +21,11 @@ data class QuizSetupUiState(
     val selectedYear: String = "All",
     val selectedMode: QuizMode = QuizMode.PRACTICE,
     val isLoading: Boolean = false,
-    val theoryQuestions: List<Question> = emptyList()
+    val theoryQuestions: List<Question> = emptyList(),
+    val numberOfQuestions: Int = 40,
+    val durationMinutes: Int = 30,
+    val shuffleQuestions: Boolean = false,
+    val shuffleOptions: Boolean = false
 )
 
 @HiltViewModel
@@ -457,5 +461,30 @@ class QuizSetupViewModel @Inject constructor(
 
     fun selectMode(mode: QuizMode) {
         _uiState.update { it.copy(selectedMode = mode) }
+    }
+
+    fun selectNumberOfQuestions(count: Int) {
+        _uiState.update { it.copy(numberOfQuestions = count) }
+    }
+
+    fun selectDurationMinutes(minutes: Int) {
+        _uiState.update { it.copy(durationMinutes = minutes) }
+    }
+
+    fun toggleShuffleQuestions(shuffle: Boolean) {
+        _uiState.update { it.copy(shuffleQuestions = shuffle) }
+    }
+
+    fun toggleShuffleOptions(shuffle: Boolean) {
+        _uiState.update { it.copy(shuffleOptions = shuffle) }
+    }
+
+    fun getMatchingTheoryQuestions(subject: String, year: String, topic: String, limit: Int): List<Question> {
+        val all = _uiState.value.theoryQuestions
+        return all.filter {
+            (subject == "All" || it.subject.equals(subject, ignoreCase = true)) &&
+            (year == "All" || it.year.equals(year, ignoreCase = true)) &&
+            (topic == "All" || it.topic.equals(topic, ignoreCase = true))
+        }.take(limit)
     }
 }

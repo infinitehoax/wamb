@@ -97,13 +97,34 @@ fun AITutorScreen(
                                     )
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
-                                RichMathText(
-                                    content = message.text,
-                                    style = MaterialTheme.typography.bodyLarge.copy(
-                                        fontSize = 16.sp,
-                                        lineHeight = 22.sp
+                                val hasMath = remember(message.text) {
+                                    message.text.contains("$$") || message.text.contains("\\(")
+                                }
+                                if (hasMath) {
+                                    RichMathText(
+                                        content = message.text,
+                                        style = MaterialTheme.typography.bodyLarge.copy(
+                                            fontSize = 16.sp,
+                                            lineHeight = 22.sp
+                                        )
                                     )
-                                )
+                                } else {
+                                    val annotated = remember(message.text) {
+                                        com.eduprep.app.presentation.quiz.UmfMarkdownParser.parseMarkdownToAnnotatedString(message.text)
+                                    }
+                                    Text(
+                                        text = annotated,
+                                        style = MaterialTheme.typography.bodyLarge.copy(
+                                            fontSize = 16.sp,
+                                            lineHeight = 22.sp,
+                                            color = if (isUser) {
+                                                MaterialTheme.colorScheme.onPrimaryContainer
+                                            } else {
+                                                MaterialTheme.colorScheme.onSurfaceVariant
+                                            }
+                                        )
+                                    )
+                                }
                             }
                         }
                     }

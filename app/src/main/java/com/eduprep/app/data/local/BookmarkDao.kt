@@ -19,4 +19,7 @@ interface BookmarkDao {
         ORDER BY b.created_at DESC
     """)
     suspend fun getBookmarkedQuestions(): List<QuestionEntity>
+
+    @Query("DELETE FROM bookmarks")
+    suspend fun clearAllBookmarks()
 }

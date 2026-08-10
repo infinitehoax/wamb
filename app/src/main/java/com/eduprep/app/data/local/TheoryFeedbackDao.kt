@@ -15,4 +15,7 @@ interface TheoryFeedbackDao {
 
     @Query("DELETE FROM theory_feedback WHERE question_id = :questionId")
     suspend fun deleteFeedbackForQuestion(questionId: Long)
+
+    @Query("DELETE FROM theory_feedback")
+    suspend fun clearAllFeedback()
 }

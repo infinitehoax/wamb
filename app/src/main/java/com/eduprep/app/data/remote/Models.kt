@@ -14,13 +14,18 @@ data class GradeEssayResponse(
     @SerializedName("missing_keywords") val missingKeywords: List<String> = emptyList()
 )
 
-data class TutorHistoryItem(
-    @SerializedName("type") val type: String, // "user_input" or "ai_reply" or "model"
-    @SerializedName("content") val content: String
+data class TutorRequest(
+    @SerializedName("history") val history: List<TutorStep>
 )
 
-data class TutorChatRequest(
-    @SerializedName("history") val history: List<TutorHistoryItem>
+data class TutorStep(
+    @SerializedName("type") val type: String, // "user_input" or "model_response"
+    @SerializedName("content") val content: List<TutorContent>
+)
+
+data class TutorContent(
+    @SerializedName("type") val type: String = "text",
+    @SerializedName("text") val text: String
 )
 
 data class TutorChatResponse(

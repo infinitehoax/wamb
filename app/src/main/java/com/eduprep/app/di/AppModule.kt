@@ -7,6 +7,7 @@ import com.eduprep.app.data.local.AppDatabase
 import com.eduprep.app.data.local.BookmarkDao
 import com.eduprep.app.data.local.QuestionDao
 import com.eduprep.app.data.local.TheoryFeedbackDao
+import com.eduprep.app.data.local.ChatDao
 import com.eduprep.app.data.remote.EduPrepBackendService
 import com.eduprep.app.data.repository.BackendRepositoryImpl
 import com.eduprep.app.data.repository.QuizRepositoryImpl
@@ -57,6 +58,12 @@ object AppModule {
     @Singleton
     fun provideTheoryFeedbackDao(database: AppDatabase): TheoryFeedbackDao {
         return database.theoryFeedbackDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideChatDao(database: AppDatabase): ChatDao {
+        return database.chatDao()
     }
 
     @Provides

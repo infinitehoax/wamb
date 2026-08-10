@@ -1,8 +1,8 @@
 package com.eduprep.app.domain.repository
 
 import com.eduprep.app.data.remote.GradeEssayResponse
-import com.eduprep.app.data.remote.TutorChatResponse
-import com.eduprep.app.data.remote.TutorStep
+import com.eduprep.app.data.remote.TutorRequest
+import com.eduprep.app.data.remote.TutorResponse
 
 interface BackendRepository {
     suspend fun submitEssayForGrading(
@@ -11,7 +11,7 @@ interface BackendRepository {
         studentAnswer: String
     ): Result<GradeEssayResponse>
 
-    suspend fun sendTutorChat(
-        history: List<TutorStep>
-    ): Result<TutorChatResponse>
+    suspend fun sendTutorMessage(
+        request: TutorRequest
+    ): Result<TutorResponse>
 }

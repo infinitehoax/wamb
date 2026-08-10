@@ -132,13 +132,15 @@ fun BookmarksScreen(
                                 HorizontalDivider()
 
                                 // Question text
-                                Text(
-                                    text = question.text,
-                                    style = MaterialTheme.typography.bodyLarge.copy(
-                                        fontWeight = FontWeight.Medium,
-                                        lineHeight = 24.sp
+                                Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                                    RichMathText(
+                                        content = question.text,
+                                        style = MaterialTheme.typography.bodyLarge.copy(
+                                            fontWeight = FontWeight.Medium,
+                                            lineHeight = 24.sp
+                                        )
                                     )
-                                )
+                                }
 
                                 // Highlight options
                                 val options = buildList {
@@ -155,8 +157,8 @@ fun BookmarksScreen(
                                         Row(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .padding(vertical = 2.dp),
-                                            verticalAlignment = Alignment.CenterVertically
+                                                .padding(vertical = 8.dp),
+                                            verticalAlignment = Alignment.Top
                                         ) {
                                             Box(
                                                 modifier = Modifier
@@ -177,13 +179,17 @@ fun BookmarksScreen(
                                                 )
                                             }
                                             Spacer(modifier = Modifier.width(12.dp))
-                                            Text(
-                                                text = optText,
-                                                style = MaterialTheme.typography.bodyMedium.copy(
-                                                    fontWeight = if (isCorrect) FontWeight.Bold else FontWeight.Normal,
-                                                    color = if (isCorrect) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                            Column(
+                                                modifier = Modifier.weight(1f)
+                                            ) {
+                                                RichMathText(
+                                                    content = optText,
+                                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                                        fontWeight = if (isCorrect) FontWeight.Bold else FontWeight.Normal,
+                                                        color = if (isCorrect) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                                    )
                                                 )
-                                            )
+                                            }
                                         }
                                     }
                                 }
@@ -205,13 +211,15 @@ fun BookmarksScreen(
                                                 fontWeight = FontWeight.Bold
                                             )
                                         )
-                                        Text(
-                                            text = question.explanation.ifBlank { "No explanation available." },
-                                            style = MaterialTheme.typography.bodyMedium.copy(
-                                                lineHeight = 22.sp,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                                            RichMathText(
+                                                content = question.explanation.ifBlank { "No explanation available." },
+                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                    lineHeight = 22.sp,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
                                             )
-                                        )
+                                        }
                                     }
                                 }
                             }

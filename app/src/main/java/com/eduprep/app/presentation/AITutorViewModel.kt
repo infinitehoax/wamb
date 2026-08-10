@@ -2,14 +2,18 @@ package com.eduprep.app.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import android.content.Context
 import com.eduprep.app.data.local.ChatDao
 import com.eduprep.app.data.local.ChatEntity
+import com.eduprep.app.data.local.ThemePreferences
 import com.eduprep.app.data.remote.TutorRequest
 import com.eduprep.app.domain.repository.BackendRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,7 +33,8 @@ data class AITutorUiState(
 @HiltViewModel
 class AITutorViewModel @Inject constructor(
     private val backendRepository: BackendRepository,
-    private val chatDao: ChatDao
+    private val chatDao: ChatDao,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AITutorUiState())
@@ -72,8 +77,8 @@ class AITutorViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                // Inside your send message coroutine:
-                val historyList = chatDao.getAllMessagesSync() // or however you access current state
+                val historyLimit = ThemePreferences.maxChatHistoryFlow(context).first() // Read limit (e.g., 10)
+                val fullHistory = chatDao.getAllMessagesSync()
 
                 // Save user message to database
                 chatDao.insert(
@@ -83,8 +88,11 @@ class AITutorViewModel @Inject constructor(
                     )
                 )
 
+                // CRITICAL: Use takeLast() to keep only the newest messages!
+                val recentHistory = fullHistory.takeLast(historyLimit)
+
                 // 1. Build the massive text block
-                val historyBlock = historyList.joinToString("\n\n") { chat ->
+                val historyBlock = recentHistory.joinToString("\n\n") { chat ->
                     if (chat.isUser) "Student: ${chat.messageText}" else "Teacher: ${chat.messageText}"
                 }
 

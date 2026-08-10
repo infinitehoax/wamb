@@ -51,6 +51,9 @@ fun SettingsScreen(
             )
         }
     ) { innerPadding ->
+        val maxChatHistory by viewModel.maxChatHistoryFlow.collectAsState(initial = 10)
+        var dropdownExpanded by remember { mutableStateOf(false) }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -72,6 +75,35 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { showThemeSheet = true }
+            )
+            HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
+
+            // AI Tutor Memory Limit Row
+            ListItem(
+                headlineContent = { Text("AI Tutor Memory Limit", fontWeight = FontWeight.SemiBold) },
+                supportingContent = { Text("Limits how many past messages the AI remembers to save data.") },
+                trailingContent = {
+                    Box {
+                        TextButton(onClick = { dropdownExpanded = true }) {
+                            Text("$maxChatHistory messages")
+                        }
+                        DropdownMenu(
+                            expanded = dropdownExpanded,
+                            onDismissRequest = { dropdownExpanded = false }
+                        ) {
+                            listOf(5, 10, 20, 50).forEach { option ->
+                                DropdownMenuItem(
+                                    text = { Text("$option messages") },
+                                    onClick = {
+                                        viewModel.setMaxChatHistory(option)
+                                        dropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
             )
             HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
 

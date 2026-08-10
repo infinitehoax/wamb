@@ -51,6 +51,51 @@ class UmfMarkdownParserTest {
     }
 
     @Test
+    fun testParseAdvancedMarkdownFeatures() {
+        val rawText = """
+            # Header 1
+            ## Header 2
+            ### Header 3
+
+            ---
+            ***
+
+            > This is a blockquote
+
+            - Bullet 1
+            * Bullet 2
+            1. Numbered 1
+            2. Numbered 2
+
+            Here is `inline code` and a code block:
+            ```
+            fun helloWorld() {
+                println("Hello, World!")
+            }
+            ```
+        """.trimIndent()
+
+        val htmlOutput = UmfParser.parseToHtml(rawText)
+
+        assertTrue(htmlOutput.contains("<h1>Header 1</h1>"))
+        assertTrue(htmlOutput.contains("<h2>Header 2</h2>"))
+        assertTrue(htmlOutput.contains("<h3>Header 3</h3>"))
+        assertTrue(htmlOutput.contains("<hr>"))
+        assertTrue(htmlOutput.contains("<blockquote>This is a blockquote</blockquote>"))
+        assertTrue(htmlOutput.contains("<li class='ul-item'>Bullet 1</li>"))
+        assertTrue(htmlOutput.contains("<li class='ul-item'>Bullet 2</li>"))
+        assertTrue(htmlOutput.contains("<li class='ol-item'>Numbered 1</li>"))
+        assertTrue(htmlOutput.contains("<li class='ol-item'>Numbered 2</li>"))
+        assertTrue(htmlOutput.contains("<code>inline code</code>"))
+        assertTrue(htmlOutput.contains("<pre><code>fun helloWorld() {\n    println(\"Hello, World!\")\n}</code></pre>"))
+        // Check list / blockquote/ header formatting (no line-breaks inside them or directly between them)
+        assertFalse(htmlOutput.contains("Bullet 1</li><br>"))
+        assertFalse(htmlOutput.contains("Header 1</h1><br>"))
+        assertFalse(htmlOutput.contains("<blockquote>This is a blockquote</blockquote><br><li"))
+        assertFalse(htmlOutput.contains("</pre><br>"))
+    }
+
+    @Test
     fun testParseToHtmlWithSubscriptConflictResolution() {
         // Chemical and math subscripts/underscores inside math delimiters should remain untouched by markdown parser
         val textWithMathAndChemicals = "Reacting \\(<math>H_2SO_4</math>\\) with \\(NaOH\\) yields water and salt, where \\(R_1\\) and \\(R_2\\) are independent."

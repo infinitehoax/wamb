@@ -15,19 +15,9 @@ data class GradeEssayResponse(
 )
 
 data class TutorRequest(
-    @SerializedName("history") val history: List<TutorStep>
+    val prompt: String
 )
 
-data class TutorStep(
-    @SerializedName("type") val type: String, // "user_input" or "model_response"
-    @SerializedName("content") val content: List<TutorContent>
-)
-
-data class TutorContent(
-    @SerializedName("type") val type: String = "text",
-    @SerializedName("text") val text: String
-)
-
-data class TutorChatResponse(
-    @SerializedName("reply") val reply: String
+data class TutorResponse(
+    val reply: String
 )

@@ -17,5 +17,5 @@ interface EduPrepBackendService {
     @Headers("x-eduprep-app-token: " + BuildConfig.APP_SECRET_TOKEN)
     suspend fun tutorChat(
         @Body request: TutorRequest
-    ): TutorChatResponse
+    ): TutorResponse
 }

@@ -4,8 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eduprep.app.data.local.ChatDao
 import com.eduprep.app.data.local.ChatEntity
-import com.eduprep.app.data.remote.TutorStep
-import com.eduprep.app.data.remote.TutorContent
+import com.eduprep.app.data.remote.TutorRequest
 import com.eduprep.app.domain.repository.BackendRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,8 +59,8 @@ class AITutorViewModel @Inject constructor(
 
     fun sendMessage() {
         val state = _uiState.value
-        val textToSend = state.currentInput.trim()
-        if (textToSend.isEmpty() || state.isLoading) return
+        val newUserInput = state.currentInput.trim()
+        if (newUserInput.isEmpty() || state.isLoading) return
 
         _uiState.update {
             it.copy(
@@ -71,42 +70,53 @@ class AITutorViewModel @Inject constructor(
             )
         }
 
-        // Build history payload from current memory history
-        val historyPayload = state.messages.map { msg ->
-            TutorStep(
-                type = if (msg.isUser) "user_input" else "model_response",
-                content = listOf(TutorContent(text = msg.text))
-            )
-        } + TutorStep(
-            type = "user_input",
-            content = listOf(TutorContent(text = textToSend))
-        )
-
         viewModelScope.launch {
-            // Save user message to database
-            chatDao.insertMessage(
-                ChatEntity(
-                    isUser = true,
-                    messageText = textToSend
-                )
-            )
+            try {
+                // Inside your send message coroutine:
+                val historyList = chatDao.getAllMessagesSync() // or however you access current state
 
-            val result = backendRepository.sendTutorChat(historyPayload)
-            result.onSuccess { response ->
-                // Save AI message to database
-                chatDao.insertMessage(
+                // Save user message to database
+                chatDao.insert(
                     ChatEntity(
-                        isUser = false,
-                        messageText = response.reply
+                        isUser = true,
+                        messageText = newUserInput
                     )
                 )
-                _uiState.update { s ->
-                    s.copy(isLoading = false)
+
+                // 1. Build the massive text block
+                val historyBlock = historyList.joinToString("\n\n") { chat ->
+                    if (chat.isUser) "Student: ${chat.messageText}" else "Teacher: ${chat.messageText}"
                 }
-            }.onFailure { error ->
+
+                // 2. Append the new message
+                val finalPrompt = if (historyBlock.isBlank()) {
+                    "Student: $newUserInput"
+                } else {
+                    "$historyBlock\n\nStudent: $newUserInput"
+                }
+
+                // 3. Send via Retrofit
+                val request = TutorRequest(prompt = finalPrompt)
+                val result = backendRepository.sendTutorMessage(request)
+
+                result.onSuccess { response ->
+                    // 4. Save response to Room
+                    chatDao.insert(ChatEntity(isUser = false, messageText = response.reply))
+                    _uiState.update { s ->
+                        s.copy(isLoading = false)
+                    }
+                }.onFailure { error ->
+                    _uiState.update { s ->
+                        s.copy(
+                            errorMessage = error.message ?: "Tutor Engine Failed. Please check your internet connection.",
+                            isLoading = false
+                        )
+                    }
+                }
+            } catch (e: Exception) {
                 _uiState.update { s ->
                     s.copy(
-                        errorMessage = error.message ?: "Tutor Engine Failed. Please check your internet connection.",
+                        errorMessage = e.message ?: "Tutor Engine Failed. Please try again.",
                         isLoading = false
                     )
                 }

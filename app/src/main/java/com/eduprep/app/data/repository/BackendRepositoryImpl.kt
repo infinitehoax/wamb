@@ -5,8 +5,7 @@ import com.eduprep.app.data.remote.EduPrepBackendService
 import com.eduprep.app.data.remote.GradeEssayRequest
 import com.eduprep.app.data.remote.GradeEssayResponse
 import com.eduprep.app.data.remote.TutorRequest
-import com.eduprep.app.data.remote.TutorChatResponse
-import com.eduprep.app.data.remote.TutorStep
+import com.eduprep.app.data.remote.TutorResponse
 import com.eduprep.app.domain.repository.BackendRepository
 import java.io.IOException
 import javax.inject.Inject
@@ -41,19 +40,15 @@ class BackendRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun sendTutorChat(
-        history: List<TutorStep>
-    ): Result<TutorChatResponse> {
+    override suspend fun sendTutorMessage(
+        request: TutorRequest
+    ): Result<TutorResponse> {
         if (!networkTracker.isCurrentlyConnected()) {
             return Result.failure(IOException("No internet connection available. Please check your network settings."))
         }
 
         return try {
-            val response = apiService.tutorChat(
-                TutorRequest(
-                    history = history
-                )
-            )
+            val response = apiService.tutorChat(request)
             Result.success(response)
         } catch (e: Exception) {
             Result.failure(e)

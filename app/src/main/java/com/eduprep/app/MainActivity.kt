@@ -186,13 +186,24 @@ fun AppMainScreen(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.PracticeHome.route,
+            startDestination = Screen.Splash.route, // CHANGED THIS
             modifier = Modifier.padding(if (showGlobalBars) innerPadding else PaddingValues(0.dp)),
             enterTransition = { slideInHorizontally(initialOffsetX = { it }) + fadeIn() },
             exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) + fadeOut() },
             popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) + fadeIn() },
             popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() }
         ) {
+            // ADD THIS NEW COMPOSABLE BLOCK:
+            composable(Screen.Splash.route) {
+                com.eduprep.app.presentation.AnimatedSplashScreen(
+                    onSplashFinished = {
+                        navController.navigate(Screen.PracticeHome.route) {
+                            popUpTo(Screen.Splash.route) { inclusive = true } // Destroy splash so user can't hit back button to it
+                        }
+                    }
+                )
+            }
+
             composable(Screen.PracticeHome.route) {
                 PracticeScreen(
                     onStartQuiz = { subject, year, topic, mode, limit, duration, shuffleQ, shuffleOpt ->

@@ -3,8 +3,8 @@
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <!-- Set the splash screen background -->
         <item name="windowSplashScreenBackground">@color/splash_background</item>
-        <!-- Use our custom logo for the center icon -->
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_eduprep_logo</item>
+        <!-- Use our ENLARGED custom logo for the center icon -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
         <!-- After splash, hand off to our pure Compose NoActionBar theme -->
         <item name="postSplashScreenTheme">@android:style/Theme.Material.NoActionBar</item>
     </style>

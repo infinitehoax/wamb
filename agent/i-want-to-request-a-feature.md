@@ -1,3 +1,5 @@
+# Dear Jules, use here to log any new idea that you think the app would have that'd be cool and also benefit users (my plan is never complete lol) would love your suggestions
+
 # Suggested Features for Future Backlogs
 
 Here are some suggested high-impact, elite features to enrich the EduPrep Offline app, focusing on retaining students and providing rich interactive tools offline:

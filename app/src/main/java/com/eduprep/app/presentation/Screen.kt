@@ -1,6 +1,7 @@
 package com.eduprep.app.presentation
 
 sealed class Screen(val route: String, val title: String) {
+    object Splash : Screen("splash", "Splash") // Added Splash Route
     object PracticeHome : Screen("practice", "Practice")
     object Classroom : Screen("classroom", "Classroom")
     object AITutor : Screen("aitutor", "AI Tutor")

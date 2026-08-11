@@ -21,7 +21,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 fun RichMathText(
     content: String,
     modifier: Modifier = Modifier,
-    style: TextStyle = TextStyle.Default
+    style: TextStyle = TextStyle.Default,
+    isLoading: Boolean = false // NEW
 ) {
     val blocks = remember(content) { UmfMarkdownParser.parseContent(content) }
     val isDark = isSystemInDarkTheme()
@@ -67,8 +68,8 @@ fun RichMathText(
                         )
                     } else {
                         // WebView Path for LaTeX rendering
-                        val html = remember(block.content, isDark) {
-                            MathHtmlBuilder.buildHtml(block.content, isDark)
+                        val html = remember(block.content, isDark, isLoading) {
+                            MathHtmlBuilder.buildHtml(block.content, isDark, isLoading)
                         }
 
                         AndroidView(
@@ -79,6 +80,7 @@ fun RichMathText(
                                         android.view.ViewGroup.LayoutParams.MATCH_PARENT,
                                         android.view.ViewGroup.LayoutParams.WRAP_CONTENT
                                     )
+                                    addJavascriptInterface(WebAppInterface(context), "AndroidInterface") // NEW
                                     setBackgroundColor(android.graphics.Color.TRANSPARENT)
                                     isVerticalScrollBarEnabled = false
                                     isHorizontalScrollBarEnabled = false

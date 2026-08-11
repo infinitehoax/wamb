@@ -3,7 +3,7 @@ package com.eduprep.app.presentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -63,8 +63,9 @@ fun AITutorScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(uiState.messages) { message ->
+                itemsIndexed(uiState.messages) { index, message ->
                     val isUser = message.isUser
+                    val isLastMessage = index == uiState.messages.lastIndex
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
@@ -97,33 +98,42 @@ fun AITutorScreen(
                                     )
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
-                                val hasMath = remember(message.text) {
-                                    message.text.contains("$$") || message.text.contains("\\(")
-                                }
-                                if (hasMath) {
+
+                                if (!isUser) {
                                     RichMathText(
                                         content = message.text,
                                         style = MaterialTheme.typography.bodyLarge.copy(
                                             fontSize = 16.sp,
                                             lineHeight = 22.sp
-                                        )
+                                        ),
+                                        isLoading = uiState.isLoading && isLastMessage
                                     )
                                 } else {
-                                    val annotated = remember(message.text) {
-                                        com.eduprep.app.presentation.quiz.UmfMarkdownParser.parseMarkdownToAnnotatedString(message.text)
+                                    val hasMath = remember(message.text) {
+                                        message.text.contains("$$") || message.text.contains("\\(") || message.text.contains("$")
                                     }
-                                    Text(
-                                        text = annotated,
-                                        style = MaterialTheme.typography.bodyLarge.copy(
-                                            fontSize = 16.sp,
-                                            lineHeight = 22.sp,
-                                            color = if (isUser) {
-                                                MaterialTheme.colorScheme.onPrimaryContainer
-                                            } else {
-                                                MaterialTheme.colorScheme.onSurfaceVariant
-                                            }
+                                    if (hasMath) {
+                                        RichMathText(
+                                            content = message.text,
+                                            style = MaterialTheme.typography.bodyLarge.copy(
+                                                fontSize = 16.sp,
+                                                lineHeight = 22.sp
+                                            ),
+                                            isLoading = false
                                         )
-                                    )
+                                    } else {
+                                        val annotated = remember(message.text) {
+                                            com.eduprep.app.presentation.quiz.UmfMarkdownParser.parseMarkdownToAnnotatedString(message.text)
+                                        }
+                                        Text(
+                                            text = annotated,
+                                            style = MaterialTheme.typography.bodyLarge.copy(
+                                                fontSize = 16.sp,
+                                                lineHeight = 22.sp,
+                                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                            )
+                                        )
+                                    }
                                 }
                             }
                         }

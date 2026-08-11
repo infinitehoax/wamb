@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The background color for the app icon (Off-white) -->
+    <background android:drawable="@color/ic_launcher_background"/>
+    <!-- The foreground logo -->
+    <foreground android:drawable="@drawable/ic_eduprep_logo"/>
+</adaptive-icon>
